@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Geist } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Toaster richColors position="top-center" />
+      </body>
     </html>
   );
 }
