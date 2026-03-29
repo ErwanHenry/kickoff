@@ -22,7 +22,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/7 | Planned | - |
+| 1. Foundation | 2/7 | In progress | - |
 | 2. Match Creation & Guest RSVP | 0/4 | Not started | - |
 | 3. Waitlist & Dashboard | 0/2 | Not started | - |
 | 4. Team Balancing | 0/2 | Not started | - |
