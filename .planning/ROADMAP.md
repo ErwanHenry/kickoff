@@ -22,7 +22,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Not started | - |
+| 1. Foundation | 0/7 | Planned | - |
 | 2. Match Creation & Guest RSVP | 0/4 | Not started | - |
 | 3. Waitlist & Dashboard | 0/2 | Not started | - |
 | 4. Team Balancing | 0/2 | Not started | - |
@@ -50,7 +50,17 @@
 4. App is installable as PWA with manifest and service worker
 5. Database schema supports all planned data models
 
-**Plans:** TBD
+**Plans:** 7 plans in 6 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 0 | 01-01-PLAN.md | Next.js 15 project init with TypeScript + Tailwind v4 |
+| 0 | 01-02-PLAN.md | shadcn/ui components setup |
+| 1 | 01-03-PLAN.md | Drizzle ORM + complete database schema |
+| 2 | 01-04-PLAN.md | better-auth with email/password + magic link |
+| 3 | 01-05-PLAN.md | Auth UI (tabbed login/register) |
+| 4 | 01-06-PLAN.md | PWA manifest + service worker |
+| 5 | 01-07-PLAN.md | Landing page + dashboard placeholder |
 
 **UI hint:** yes
 
@@ -113,7 +123,7 @@
 3. New players without ratings default to 3.0 on all axes
 4. Organizer can view team assignments with total scores per team
 5. Organizer can manually drag-and-drop players between teams
-6. Teams display balance indicator (Équilibré / Léger avantage / Déséquilibré)
+6. Teams display balance indicator (Equilibre / Leger avantage / Desequilibre)
 7. Match locks when teams are finalized
 
 **Plans:** TBD
@@ -205,7 +215,7 @@
 3. Organizer can invite players via link with invite code
 4. User can join group via invite code
 5. Group displays leaderboard (players ranked by avg_overall)
-6. Leaderboard shows top 3 with 🥇🥈🥉 badges
+6. Leaderboard shows top 3 with medals badges
 7. Group displays match history
 8. Group can have multiple organizers
 9. Match can be associated with a group
@@ -305,7 +315,7 @@
 | NOTIF-04 | 10 | NOTIF-05 | 10 |
 
 **Total:** 73 requirements mapped to 10 phases
-**Unmapped:** 0 ✓
+**Unmapped:** 0
 
 ---
 *Last updated: 2026-03-30*
