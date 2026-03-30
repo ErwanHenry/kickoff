@@ -54,3 +54,75 @@ export function calculatePlayerScore(player: Player): number {
 
   return t * 0.4 + p * 0.3 + c * 0.3;
 }
+
+/**
+ * Generate all combinations of n/2 players for team A
+ * Uses bitmask approach for O(2^n) complexity
+ *
+ * @param players - All players to split
+ * @returns All possible team A combinations
+ */
+function generateCombinations(players: Player[]): Player[][] {
+  const n = players.length;
+  const teamSize = Math.floor(n / 2);
+  const combinations: Player[][] = [];
+
+  // Generate all 2^n combinations using bitmask
+  for (let mask = 0; mask < (1 << n); mask++) {
+    // Count set bits to ensure exactly teamSize players
+    const bitCount = mask.toString(2).split('1').length - 1;
+    if (bitCount !== teamSize) continue;
+
+    const teamA: Player[] = [];
+    for (let i = 0; i < n; i++) {
+      if (mask & (1 << i)) {
+        teamA.push(players[i]);
+      }
+    }
+    combinations.push(teamA);
+  }
+
+  return combinations;
+}
+
+/**
+ * Brute-force team balancing for ≤14 players
+ * Time complexity: O(C(n, n/2) * n)
+ * For 14 players: C(14, 7) = 3,432 combinations (~50ms)
+ *
+ * @param players - All players to balance
+ * @returns Optimal team split with minimum score difference
+ */
+export function balanceTeamsBruteForce(players: Player[]): BalanceResult {
+  const combinations = generateCombinations(players);
+  let bestResult: BalanceResult | null = null;
+  let minDiff = Infinity;
+
+  for (const teamAPlayers of combinations) {
+    const teamBPlayers = players.filter(p => !teamAPlayers.includes(p));
+
+    const scoreA = teamAPlayers.reduce((sum, p) => sum + calculatePlayerScore(p), 0);
+    const scoreB = teamBPlayers.reduce((sum, p) => sum + calculatePlayerScore(p), 0);
+    const diff = Math.abs(scoreA - scoreB);
+
+    if (diff < minDiff) {
+      minDiff = diff;
+      bestResult = {
+        teamA: {
+          players: teamAPlayers,
+          totalScore: scoreA,
+          playerCount: teamAPlayers.length,
+        },
+        teamB: {
+          players: teamBPlayers,
+          totalScore: scoreB,
+          playerCount: teamBPlayers.length,
+        },
+        diff,
+        algorithm: 'brute-force',
+      };
+    }
+  }
+
+  return bestResult!;
+}
