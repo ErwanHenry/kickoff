@@ -126,3 +126,54 @@ export function balanceTeamsBruteForce(players: Player[]): BalanceResult {
 
   return bestResult!;
 }
+
+/**
+ * Serpentine draft fallback for >14 players
+ * Sort by score, then alternate picks (A, B, B, A, A, B, ...)
+ * Time complexity: O(n log n) for sorting
+ *
+ * Pattern: indices 0,3,4,7,8... → Team A; indices 1,2,5,6,9,10... → Team B
+ *
+ * @param players - All players to balance
+ * @returns Balanced teams using serpentine draft
+ */
+export function balanceTeamsSerpentine(players: Player[]): BalanceResult {
+  const sorted = [...players].sort((a, b) => calculatePlayerScore(b) - calculatePlayerScore(a));
+  const teamAPlayers: Player[] = [];
+  const teamBPlayers: Player[] = [];
+
+  sorted.forEach((player, index) => {
+    // Serpentine pattern: A, B, B, A, A, B, B, A, ...
+    const isTeamA = index % 4 === 0 || index % 4 === 3;
+    if (isTeamA) {
+      teamAPlayers.push(player);
+    } else {
+      teamBPlayers.push(player);
+    }
+  });
+
+  const scoreA = teamAPlayers.reduce((sum, p) => sum + calculatePlayerScore(p), 0);
+  const scoreB = teamBPlayers.reduce((sum, p) => sum + calculatePlayerScore(p), 0);
+
+  return {
+    teamA: { players: teamAPlayers, totalScore: scoreA, playerCount: teamAPlayers.length },
+    teamB: { players: teamBPlayers, totalScore: scoreB, playerCount: teamBPlayers.length },
+    diff: Math.abs(scoreA - scoreB),
+    algorithm: 'serpentine',
+  };
+}
+
+/**
+ * Main entry point: choose algorithm based on player count
+ * - ≤14 players: brute-force (optimal)
+ * - >14 players: serpentine draft (efficient)
+ *
+ * @param players - All players to balance
+ * @returns Balanced teams with algorithm metadata
+ */
+export function balanceTeams(players: Player[]): BalanceResult {
+  if (players.length <= 14) {
+    return balanceTeamsBruteForce(players);
+  }
+  return balanceTeamsSerpentine(players);
+}
