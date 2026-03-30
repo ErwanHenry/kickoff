@@ -7,7 +7,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** - Project setup, database schema, authentication, PWA configuration
+- [x] **Phase 1: Foundation** - Project setup, database schema, authentication, PWA configuration
 - [ ] **Phase 2: Match Creation & Guest RSVP** - Core CRUD, public match page, zero-friction guest flow
 - [ ] **Phase 3: Waitlist & Dashboard** - Automatic promotion, organizer dashboard
 - [ ] **Phase 4: Team Balancing** - Algorithm, team generation UI, balance indicators
@@ -22,7 +22,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/7 | In progress | - |
+| 1. Foundation | 7/7 | Complete | 2026-03-30 |
 | 2. Match Creation & Guest RSVP | 0/4 | Not started | - |
 | 3. Waitlist & Dashboard | 0/2 | Not started | - |
 | 4. Team Balancing | 0/2 | Not started | - |
