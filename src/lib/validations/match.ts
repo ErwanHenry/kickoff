@@ -36,3 +36,23 @@ export const matchCreateSchema = z
   });
 
 export type MatchCreateInput = z.infer<typeof matchCreateSchema>;
+
+/**
+ * Match closure validation schema
+ * Per CONTEXT.md decisions D-04 through D-10
+ * Validates score fields, attendance marking, and optional match summary
+ */
+export const matchCloseSchema = z.object({
+  matchId: z.string().uuid("Match ID invalide"),
+  scoreTeamA: z.number().int().min(0).max(99, "Score doit être entre 0 et 99"),
+  scoreTeamB: z.number().int().min(0).max(99, "Score doit être entre 0 et 99"),
+  matchSummary: z.string().max(500, "Le résumé ne peut pas dépasser 500 caractères").optional(),
+  attendance: z.array(
+    z.object({
+      playerId: z.string().uuid("ID du joueur invalide"),
+      present: z.boolean(),
+    })
+  ).min(1, "Au moins un joueur doit être marqué"),
+});
+
+export type MatchCloseInput = z.infer<typeof matchCloseSchema>;
