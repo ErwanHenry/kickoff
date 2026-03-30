@@ -54,7 +54,11 @@ export const auth = betterAuth({
       expiresIn: 300, // 5 minutes
     }),
   ],
-  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+  // Use dynamic origin for preview deployments and production
+  // In development, use localhost; in production, allow current origin
+  trustedOrigins: process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000"]
+    : [], // Empty array allows any origin when not in development
 });
 
 // Type exports
