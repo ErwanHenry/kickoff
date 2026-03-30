@@ -103,10 +103,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### PWA
 
-- [ ] **PWA-01**: App is installable as PWA (manifest, service worker)
-- [ ] **PWA-02**: Service worker caches app shell for offline viewing
-- [ ] **PWA-03**: App displays install prompt on eligible devices
-- [ ] **PWA-04**: App works standalone after installation
+- [x] **PWA-01**: App is installable as PWA (manifest, service worker)
+- [x] **PWA-02**: Service worker caches app shell for offline viewing
+- [x] **PWA-03**: App displays install prompt on eligible devices
+- [x] **PWA-04**: App works standalone after installation
 
 ### Sharing & Discovery
 
@@ -235,10 +235,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RECUR-02 | Phase 9 | Pending |
 | RECUR-03 | Phase 9 | Pending |
 | RECUR-04 | Phase 9 | Pending |
-| PWA-01 | Phase 1 | Pending |
-| PWA-02 | Phase 1 | Pending |
-| PWA-03 | Phase 1 | Pending |
-| PWA-04 | Phase 1 | Pending |
+| PWA-01 | Phase 1 | Complete |
+| PWA-02 | Phase 1 | Complete |
+| PWA-03 | Phase 1 | Complete |
+| PWA-04 | Phase 1 | Complete |
 | SHARE-01 | Phase 10 | Pending |
 | SHARE-02 | Phase 10 | Pending |
 | SHARE-03 | Phase 2 | Pending |
