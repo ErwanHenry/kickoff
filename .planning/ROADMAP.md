@@ -24,8 +24,8 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation | 7/7 | Complete | 2026-03-30 |
 | 2. Match Creation & Guest RSVP | 1/3 | In Progress|  |
-| 3. Waitlist & Dashboard | 0/2 | Not started | - |
-| 4. Team Balancing | 0/2 | Not started | - |
+| 3. Waitlist & Dashboard | 1/3 | In Progress|  |
+| 4. Team Balancing | 0/3 | Not started | - |
 | 5. Post-Match Closure | 0/2 | Not started | - |
 | 6. Ratings & Stats | 0/3 | Not started | - |
 | 7. Player Profiles | 0/2 | Not started | - |
@@ -111,7 +111,7 @@
 3. Organizer sees upcoming match with confirmed count on dashboard
 4. Organizer can navigate to recent matches and create new matches from dashboard
 
-**Plans:** TBD
+**Plans:** 1/3 plans executed
 
 **UI hint:** yes
 
@@ -134,7 +134,13 @@
 6. Teams display balance indicator (Equilibre / Leger avantage / Desequilibre)
 7. Match locks when teams are finalized
 
-**Plans:** TBD
+**Plans:** 3 plans in 3 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 04-01-PLAN.md | Team balancing algorithm (brute-force + serpentine) with unit tests |
+| 2 | 04-02-PLAN.md | Database queries + Server Actions for team generation and locking |
+| 3 | 04-03-PLAN.md | Team reveal UI with @dnd-kit drag-and-drop + balance indicator |
 
 **UI hint:** yes
 
