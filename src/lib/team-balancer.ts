@@ -76,7 +76,10 @@ function generateCombinations(players: Player[]): Player[][] {
     const teamA: Player[] = [];
     for (let i = 0; i < n; i++) {
       if (mask & (1 << i)) {
-        teamA.push(players[i]);
+        const player = players[i];
+        if (player) {
+          teamA.push(player);
+        }
       }
     }
     combinations.push(teamA);
