@@ -26,7 +26,7 @@
 | 2. Match Creation & Guest RSVP | 1/3 | In Progress|  |
 | 3. Waitlist & Dashboard | 2/3 | In Progress|  |
 | 4. Team Balancing | 0/3 | Not started | - |
-| 5. Post-Match Closure | 0/2 | Not started | - |
+| 5. Post-Match Closure | 1/1 | Planning | - |
 | 6. Ratings & Stats | 0/3 | Not started | - |
 | 7. Player Profiles | 0/2 | Not started | - |
 | 8. Groups & Leaderboards | 0/3 | Not started | - |
@@ -113,6 +113,11 @@
 
 **Plans:** 2/3 plans executed
 
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 03-01-PLAN.md | Waitlist promotion API with FOR UPDATE locking |
+| 2 | 03-02-PLAN.md | Organizer dashboard with upcoming/recent matches |
+
 **UI hint:** yes
 
 ---
@@ -161,7 +166,11 @@
 4. Match status changes to "played" when closed
 5. Players marked absent receive "no_show" status
 
-**Plans:** TBD
+**Plans:** 1 plan in 1 wave
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 05-01-PLAN.md | Attendance marking form + score entry + match closure Server Action |
 
 **UI hint:** yes
 
