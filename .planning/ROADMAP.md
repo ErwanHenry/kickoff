@@ -24,7 +24,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation | 7/7 | Complete | 2026-03-30 |
 | 2. Match Creation & Guest RSVP | 1/3 | In Progress|  |
-| 3. Waitlist & Dashboard | 1/3 | In Progress|  |
+| 3. Waitlist & Dashboard | 2/3 | In Progress|  |
 | 4. Team Balancing | 0/3 | Not started | - |
 | 5. Post-Match Closure | 0/2 | Not started | - |
 | 6. Ratings & Stats | 0/3 | Not started | - |
@@ -111,7 +111,7 @@
 3. Organizer sees upcoming match with confirmed count on dashboard
 4. Organizer can navigate to recent matches and create new matches from dashboard
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 **UI hint:** yes
 
