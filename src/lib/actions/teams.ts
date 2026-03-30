@@ -7,7 +7,7 @@ import { eq, inArray, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { balanceTeams, type Player } from '@/lib/team-balancer';
 import { getMatchPlayersWithStats } from '@/lib/db/queries/players';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, headers } from 'next/cache';
 
 const generateTeamsSchema = z.object({
   matchId: z.string().uuid(),
@@ -102,5 +102,78 @@ export async function generateTeams(input: { matchId: string }) {
   } catch (error) {
     console.error('Team generation error:', error);
     return { error: 'Erreur lors de la génération des équipes' };
+  }
+}
+
+const reassignPlayerSchema = z.object({
+  matchId: z.string().uuid(),
+  playerId: z.string().uuid(),
+  fromTeam: z.enum(['A', 'B']),
+  toTeam: z.enum(['A', 'B']),
+});
+
+/**
+ * Manually reassign a player from one team to another
+ * Only the match creator can reassign players
+ *
+ * @param input - Object containing matchId, playerId, fromTeam, toTeam
+ * @returns Success or error message
+ */
+export async function reassignPlayer(input: {
+  matchId: string;
+  playerId: string;
+  fromTeam: 'A' | 'B';
+  toTeam: 'A' | 'B';
+}) {
+  const { matchId, playerId, fromTeam, toTeam } = reassignPlayerSchema.parse(input);
+
+  // Get session and verify user is authenticated
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return { error: 'Non authentifié' };
+  }
+
+  // Fetch match and verify permissions
+  const [match] = await db
+    .select()
+    .from(matches)
+    .where(eq(matches.id, matchId))
+    .limit(1);
+
+  if (!match) {
+    return { error: 'Match non trouvé' };
+  }
+
+  if (match.createdBy !== session.user.id) {
+    return { error: 'Vous n\'êtes pas l\'organisateur de ce match' };
+  }
+
+  if (match.status !== 'locked') {
+    return { error: 'Les équipes ne sont pas encore générées' };
+  }
+
+  try {
+    // Update player's team assignment
+    await db
+      .update(matchPlayers)
+      .set({ team: toTeam })
+      .where(
+        and(
+          eq(matchPlayers.id, playerId),
+          eq(matchPlayers.matchId, matchId),
+          eq(matchPlayers.team, fromTeam)
+        )
+      );
+
+    revalidatePath(`/match/${matchId}`);
+    revalidatePath(`/match/${matchId}/teams`);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Player reassignment error:', error);
+    return { error: 'Erreur lors de la réassignation' };
   }
 }
