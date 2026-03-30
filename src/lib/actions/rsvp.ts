@@ -7,6 +7,7 @@ import { eq, sql, and } from "drizzle-orm";
 import { generateGuestToken } from "@/lib/utils/ids";
 import { setGuestToken } from "@/lib/cookies";
 import { revalidatePath } from "next/cache";
+import { promoteFirstWaitlisted } from "@/app/api/waitlist/route";
 
 const rsvpSchema = z.object({
   shareToken: z.string().length(10),
@@ -148,7 +149,8 @@ export async function rsvpMatch(formData: FormData) {
 /**
  * Cancel RSVP for a guest
  * - Updates player status to "cancelled"
- * - Changes match status from "full" to "open" if spot freed (WAIT-03)
+ * - Promotes first waitlisted player if waitlist exists (WAIT-01)
+ * - Changes match status from "full" to "open" if no waitlist (WAIT-03)
  * - Cookie preserved for re-RSVP
  */
 export async function cancelRsvp(formData: FormData) {
@@ -197,25 +199,28 @@ export async function cancelRsvp(formData: FormData) {
       })
       .where(eq(matchPlayers.id, player[0].id));
 
-    // Check if match was full and has waitlist
-    if (matchData.status === "full") {
-      const [waitlistCount] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(matchPlayers)
-        .where(
-          and(
-            eq(matchPlayers.matchId, matchData.id),
-            eq(matchPlayers.status, "waitlisted")
-          )
-        );
+    // Check if match has waitlisted players
+    const [waitlistCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(matchPlayers)
+      .where(
+        and(
+          eq(matchPlayers.matchId, matchData.id),
+          eq(matchPlayers.status, "waitlisted")
+        )
+      );
 
-      if ((waitlistCount?.count ?? 0) > 0) {
-        // Change match status from "full" to "open" (WAIT-03)
-        await db
-          .update(matches)
-          .set({ status: "open" })
-          .where(eq(matches.id, matchData.id));
-      }
+    const hasWaitlist = (waitlistCount?.count ?? 0) > 0;
+
+    if (hasWaitlist) {
+      // Promote first waitlisted player to confirmed (WAIT-01)
+      await promoteFirstWaitlisted(matchData.id);
+    } else if (matchData.status === "full") {
+      // If no waitlist and match was full, change status to "open" (WAIT-03)
+      await db
+        .update(matches)
+        .set({ status: "open" })
+        .where(eq(matches.id, matchData.id));
     }
 
     // Revalidate page to show updated state
