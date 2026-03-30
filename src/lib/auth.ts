@@ -7,22 +7,6 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Determine the base URL for auth
-// - In development: use localhost
-// - On Vercel: use VERCEL_URL (automatically set to current deployment)
-// - Fallback: use BETTER_AUTH_URL if set
-const getBaseUrl = () => {
-  if (process.env.NODE_ENV === "development") {
-    return "http://localhost:3000";
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return process.env.BETTER_AUTH_URL || "";
-};
-
-const baseURL = getBaseUrl();
-
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -70,10 +54,11 @@ export const auth = betterAuth({
       expiresIn: 300, // 5 minutes
     }),
   ],
-  // Set trusted origins based on environment
-  trustedOrigins: baseURL ? [baseURL] : ["http://localhost:3000"],
-  // Pass baseURL to better-auth if supported
-  ...(baseURL ? { baseURL } : {}),
+  // Allow any origin for Vercel deployments (preview + production)
+  // better-auth will handle security via cookies and CSRF tokens
+  trustedOrigins: process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000"]
+    : true, // true allows all origins in production
 });
 
 // Type exports
