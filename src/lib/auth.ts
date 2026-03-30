@@ -58,7 +58,7 @@ export const auth = betterAuth({
   // better-auth will handle security via cookies and CSRF tokens
   trustedOrigins: process.env.NODE_ENV === "development"
     ? ["http://localhost:3000"]
-    : true, // true allows all origins in production
+    : [], // Empty array allows all origins
 });
 
 // Type exports
