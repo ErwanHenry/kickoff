@@ -97,12 +97,12 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link href="/matches/new">
+          <Link href="/matches/new">
+            <Button className="bg-primary hover:bg-primary/90">
               <Plus className="h-4 w-4 mr-2" />
               Nouveau match
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
       {/* Upcoming match section */}
       <section>
         <h2 className="text-lg font-semibold mb-3">Prochain match</h2>
-        {upcoming.length > 0 ? (
+        {upcoming.length > 0 && upcoming[0] ? (
           <MatchCard match={upcoming[0]} variant="upcoming" />
         ) : (
           <Card>
@@ -138,12 +138,12 @@ export default async function DashboardPage() {
               <p className="text-muted-foreground mb-4">
                 Crée ton premier match et invite tes potes !
               </p>
-              <Button asChild className="w-full">
-                <Link href="/matches/new">
+              <Link href="/matches/new">
+                <Button className="w-full">
                   <Plus className="h-4 w-4 mr-2" />
                   Créer un match
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}
@@ -155,9 +155,9 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Mes matchs</h2>
             {recent.length >= 5 && (
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard/matches">Voir tout</Link>
-              </Button>
+              <Link href="/dashboard/matches">
+                <Button variant="ghost" size="sm">Voir tout</Button>
+              </Link>
             )}
           </div>
           <div className="space-y-3">
@@ -171,26 +171,26 @@ export default async function DashboardPage() {
       {/* Mobile navigation placeholder (Phase 3) */}
       <nav className="fixed bottom-0 left-0 right-0 bg-background border-t md:hidden">
         <div className="flex items-center justify-around py-2">
-          <Button variant="ghost" size="sm" asChild className="flex-1">
-            <Link href="/dashboard" className="flex flex-col items-center gap-1">
+          <Link href="/dashboard" className="flex flex-col items-center gap-1 flex-1">
+            <Button variant="ghost" size="sm" className="w-full">
               <span className="text-xs">Accueil</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="flex-1">
-            <Link href="/dashboard/matches" className="flex flex-col items-center gap-1">
+            </Button>
+          </Link>
+          <Link href="/dashboard/matches" className="flex flex-col items-center gap-1 flex-1">
+            <Button variant="ghost" size="sm" className="w-full">
               <span className="text-xs">Matchs</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="flex-1">
-            <Link href="/dashboard/groups" className="flex flex-col items-center gap-1">
+            </Button>
+          </Link>
+          <Link href="/dashboard/groups" className="flex flex-col items-center gap-1 flex-1">
+            <Button variant="ghost" size="sm" className="w-full">
               <span className="text-xs">Groupes</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="flex-1">
-            <Link href="/profile" className="flex flex-col items-center gap-1">
+            </Button>
+          </Link>
+          <Link href="/profile" className="flex flex-col items-center gap-1 flex-1">
+            <Button variant="ghost" size="sm" className="w-full">
               <span className="text-xs">Profil</span>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </nav>
     </div>

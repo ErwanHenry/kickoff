@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { Match } from "@/db/schema";
 
 interface MatchCardProps {
-  match: Match & { confirmedCount?: number };
+  match: Partial<Match> & { confirmedCount?: number } & Pick<Match, "id" | "title" | "location" | "date" | "maxPlayers" | "status" | "shareToken">;
   variant: "upcoming" | "recent";
 }
 
@@ -36,7 +36,7 @@ export function MatchCard({ match, variant }: MatchCardProps) {
     rated: { label: "Noté", variant: "outline" },
   };
 
-  const status = statusConfig[match.status] || statusConfig.open;
+  const status = match.status ? statusConfig[match.status] : statusConfig.open;
 
   // Determine link based on variant
   const href = variant === "upcoming" ? `/m/${match.shareToken}` : `/match/${match.id}`;
@@ -59,8 +59,8 @@ export function MatchCard({ match, variant }: MatchCardProps) {
                 <span className="truncate">{match.location}</span>
               </div>
             </div>
-            <Badge variant={status.variant} className="flex-shrink-0">
-              {status.label}
+            <Badge variant={status?.variant ?? "default"} className="flex-shrink-0">
+              {status?.label ?? "Ouvert"}
             </Badge>
           </div>
         </CardHeader>

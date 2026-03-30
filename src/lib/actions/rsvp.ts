@@ -7,7 +7,7 @@ import { eq, sql, and } from "drizzle-orm";
 import { generateGuestToken } from "@/lib/utils/ids";
 import { setGuestToken } from "@/lib/cookies";
 import { revalidatePath } from "next/cache";
-import { promoteFirstWaitlisted } from "@/app/api/waitlist/route";
+import { promoteFirstWaitlisted } from "@/lib/actions/waitlist";
 
 const rsvpSchema = z.object({
   shareToken: z.string().length(10),

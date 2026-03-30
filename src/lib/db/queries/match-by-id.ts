@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { matches } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { getMatchPlayers, getConfirmedCount, getWaitlistCount } from "@/lib/db/queries/matches";
+import { getMatchPlayers, getConfirmedCount, getWaitlistCount } from "./matches";
 
 /**
  * Get a match by ID
