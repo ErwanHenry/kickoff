@@ -49,9 +49,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **BALANCE-02**: Algorithm uses player scores (technique 40%, physique 30%, collectif 30%)
 - [x] **BALANCE-03**: New players without ratings default to 3.0 on all axes
 - [x] **BALANCE-04**: Organizer can view team assignments with scores per team
-- [ ] **BALANCE-05**: Organizer can manually reassign players between teams
+- [x] **BALANCE-05**: Organizer can manually reassign players between teams
 - [x] **BALANCE-06**: Match locks when teams are finalized
-- [ ] **BALANCE-07**: Teams display with visual balance indicator (equilibré / léger avantage / déséquilibré)
+- [x] **BALANCE-07**: Teams display with visual balance indicator (equilibré / léger avantage / déséquilibré)
 
 ### Post-Match
 
@@ -199,9 +199,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BALANCE-02 | Phase 4 | Pending |
 | BALANCE-03 | Phase 4 | Complete |
 | BALANCE-04 | Phase 4 | Complete |
-| BALANCE-05 | Phase 4 | Pending |
+| BALANCE-05 | Phase 4 | Complete |
 | BALANCE-06 | Phase 4 | Complete |
-| BALANCE-07 | Phase 4 | Pending |
+| BALANCE-07 | Phase 4 | Complete |
 | POST-01 | Phase 5 | Pending |
 | POST-02 | Phase 5 | Pending |
 | POST-03 | Phase 5 | Pending |
