@@ -55,10 +55,10 @@ export const auth = betterAuth({
     }),
   ],
   // Allow any origin for Vercel deployments (preview + production)
-  // In production, don't set trustedOrigins to allow all origins
-  ...(process.env.NODE_ENV === "development" && {
-    trustedOrigins: ["http://localhost:3000"],
-  }),
+  // undefined = disable origin checking
+  trustedOrigins: process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000"]
+    : undefined, // undefined disables origin checking entirely
 });
 
 // Type exports
