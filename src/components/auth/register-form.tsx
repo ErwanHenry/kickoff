@@ -34,6 +34,8 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
+      console.log("[REGISTER] Attempting registration:", data.email);
+
       const result = await signUp.email({
         name: data.name,
         email: data.email,
@@ -41,18 +43,25 @@ export function RegisterForm() {
         callbackURL: "/dashboard",
       });
 
+      console.log("[REGISTER] Result:", result);
+
       if (result.error) {
-        toast.error("Inscription echouee", {
-          description: result.error.message || "Cet email est peut-etre deja utilise",
+        console.error("[REGISTER] Error:", result.error);
+        toast.error("Inscription échouée", {
+          description: result.error.message || "Email déjà utilisé ou erreur de validation",
         });
         return;
       }
 
+      console.log("[REGISTER] Success, redirecting to dashboard");
       toast.success("Bienvenue sur kickoff !");
       router.push("/dashboard");
       router.refresh();
-    } catch {
-      toast.error("Une erreur est survenue");
+    } catch (error) {
+      console.error("[REGISTER] Exception:", error);
+      toast.error("Une erreur est survenue", {
+        description: error instanceof Error ? error.message : "Erreur inconnue",
+      });
     } finally {
       setIsLoading(false);
     }
