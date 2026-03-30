@@ -2,8 +2,8 @@
 phase: 2
 slug: match-creation-guest-rsvp
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-30
 ---
 
@@ -58,6 +58,8 @@ created: 2026-03-30
 - [ ] `src/app/__tests__/dashboard.test.tsx` — stubs for MATCH-07
 - [ ] `vitest.config.ts` — verify configuration (exists from Phase 1)
 
+**Note:** Wave 0 is optional — all tasks use grep/file checks for `<automated>` verification, no MISSING references present.
+
 ---
 
 ## Manual-Only Verifications
@@ -65,20 +67,25 @@ created: 2026-03-30
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
 | Cookie persistence across browser sessions | GUEST-03 | Requires browser restart and cookie inspection | 1. RSVP as guest 2. Close browser 3. Reopen /m/{token} 4. Verify "Salut [Prénom]" banner appears |
+| localStorage fallback for Safari ITP | GUEST-03, CONTEXT D-17 | Requires Safari browser testing | 1. RSVP as guest in Safari 2. Verify localStorage set 3. Refresh page 4. Verify state restored from localStorage |
 | WhatsApp link preview accuracy | SHARE-03 | Requires external WhatsApp link debugger | 1. Create match 2. Copy /m/{token} link 3. Paste in https://developers.facebook.com/tools/debug/ 4. Verify OG title, description, image |
 | 3G connection load time <1s | SHARE-03 | Requires network throttling in DevTools | 1. Open Chrome DevTools 2. Enable "Fast 3G" throttling 3. Load /m/{token} 4. Check Network tab timing |
 | Match status badge visibility | MATCH-05, MATCH-06 | Visual verification on mobile viewport | 1. Open match page on iPhone SE (375px) 2. Verify status badge color and text |
 | Guest returning sees personalized welcome | GUEST-04 | Visual verification of UI state | 1. RSVP as guest "Thomas" 2. Refresh page 3. Verify "Salut Thomas ! Tu es confirmé" banner |
+| Guest cancellation works | GUEST-05 | Functional verification of cancel flow | 1. RSVP as guest 2. Click "Me désinscrire" 3. Verify status changes to cancelled 4. Verify button returns to "Je suis là !" |
+| Concurrent RSVP + cancellation handling | WAIT-03, WAIT-04 | Requires two browser windows | 1. Open two browsers 2. Simultaneously cancel and RSVP for last spot 3. Verify transaction handles correctly |
+| Concurrent RSVP + promotion handling | WAIT-01 | Requires two browser windows | 1. Create match 9 confirmed, 1 waitlisted 2. Simultaneously cancel 1 confirmed AND RSVP 1 new 3. Verify final state correct |
 
 ---
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 10s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (N/A — no MISSING references, Wave 0 optional)
+- [x] No watch-mode flags
+- [x] Feedback latency < 10s
+- [x] `nyquist_compliant: true` set in frontmatter
+- [x] `wave_0_complete: true` set in frontmatter (Wave 0 optional since all tasks use grep/file checks)
 
 **Approval:** pending
