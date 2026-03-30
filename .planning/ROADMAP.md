@@ -23,7 +23,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 7/7 | Complete | 2026-03-30 |
-| 2. Match Creation & Guest RSVP | 0/3 | Not started | - |
+| 2. Match Creation & Guest RSVP | 1/3 | In Progress|  |
 | 3. Waitlist & Dashboard | 0/2 | Not started | - |
 | 4. Team Balancing | 0/2 | Not started | - |
 | 5. Post-Match Closure | 0/2 | Not started | - |
@@ -85,7 +85,7 @@
 8. Match status progresses correctly (draft → open → full)
 9. Organizer dashboard shows upcoming and recent matches
 
-**Plans:** 3 plans in 2 waves
+**Plans:** 1/3 plans executed
 
 | Wave | Plan | Objective |
 |------|------|-----------|

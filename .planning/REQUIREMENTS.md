@@ -17,11 +17,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Match Management
 
-- [ ] **MATCH-01**: Organizer can create match with date, time, location, max/min players
-- [ ] **MATCH-02**: Organizer can set optional confirmation deadline
+- [x] **MATCH-01**: Organizer can create match with date, time, location, max/min players
+- [x] **MATCH-02**: Organizer can set optional confirmation deadline
 - [ ] **MATCH-03**: Organizer can set match recurrence (none / weekly)
-- [ ] **MATCH-04**: Match generates unique shareable link (/m/{shareToken})
-- [ ] **MATCH-05**: Match status progresses: draft → open → full → locked → played → rated
+- [x] **MATCH-04**: Match generates unique shareable link (/m/{shareToken})
+- [x] **MATCH-05**: Match status progresses: draft → open → full → locked → played → rated
 - [ ] **MATCH-06**: Match displays confirmed count vs max (e.g., "8/14 confirmés")
 - [ ] **MATCH-07**: Organizer can view dashboard with upcoming and recent matches
 - [ ] **MATCH-08**: Match can be associated with a group (optional)
@@ -176,11 +176,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Pending |
 | AUTH-05 | Phase 10 | Pending |
-| MATCH-01 | Phase 2 | Pending |
-| MATCH-02 | Phase 2 | Pending |
+| MATCH-01 | Phase 2 | Complete |
+| MATCH-02 | Phase 2 | Complete |
 | MATCH-03 | Phase 9 | Pending |
-| MATCH-04 | Phase 2 | Pending |
-| MATCH-05 | Phase 2 | Pending |
+| MATCH-04 | Phase 2 | Complete |
+| MATCH-05 | Phase 2 | Complete |
 | MATCH-06 | Phase 2 | Pending |
 | MATCH-07 | Phase 3 | Pending |
 | MATCH-08 | Phase 8 | Pending |
