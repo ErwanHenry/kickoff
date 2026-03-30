@@ -23,7 +23,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 7/7 | Complete | 2026-03-30 |
-| 2. Match Creation & Guest RSVP | 0/4 | Not started | - |
+| 2. Match Creation & Guest RSVP | 0/3 | Not started | - |
 | 3. Waitlist & Dashboard | 0/2 | Not started | - |
 | 4. Team Balancing | 0/2 | Not started | - |
 | 5. Post-Match Closure | 0/2 | Not started | - |
@@ -72,7 +72,7 @@
 
 **Depends on:** Phase 1
 
-**Requirements:** MATCH-01, MATCH-02, MATCH-04, MATCH-05, MATCH-06, MATCH-07, GUEST-01, GUEST-02, GUEST-03, GUEST-04, GUEST-05, GUEST-06, GUEST-07, WAIT-03, WAIT-04, SHARE-03
+**Requirements:** MATCH-01, MATCH-02, MATCH-04, MATCH-05, MATCH-06, MATCH-07, GUEST-01, GUEST-02, GUEST-03, GUEST-04, GUEST-05, GUEST-06, GUEST-07, WAIT-01, WAIT-03, WAIT-04, SHARE-03
 
 **Success Criteria** (what must be TRUE):
 1. Organizer can create match with date, time, location, player limits, deadline
@@ -80,10 +80,18 @@
 3. Guest can view match page and RSVP with first name only (no account)
 4. Guest returning sees their RSVP status and can cancel
 5. Guest automatically waitlisted when match is full, sees position
-6. Match page loads in <1s on 3G connection
-7. Match status progresses correctly (draft → open → full)
+6. Waitlisted players auto-promoted when spots open (FIFO)
+7. Match page loads in <1s on 3G connection
+8. Match status progresses correctly (draft → open → full)
+9. Organizer dashboard shows upcoming and recent matches
 
-**Plans:** TBD
+**Plans:** 3 plans in 2 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 02-01-PLAN.md | Match creation form (card sections, Zod validation, draft + publish workflow) |
+| 1 | 02-02-PLAN.md | Public match page with guest RSVP (httpOnly cookies, waitlist, race condition prevention) |
+| 2 | 02-03-PLAN.md | Waitlist promotion + organizer dashboard (upcoming/recent matches) |
 
 **UI hint:** yes
 
@@ -285,7 +293,7 @@
 | GUEST-02 | 2 | GUEST-03 | 2 |
 | GUEST-04 | 2 | GUEST-05 | 2 |
 | GUEST-06 | 2 | GUEST-07 | 2 |
-| WAIT-01 | 3 | WAIT-02 | 10 |
+| WAIT-01 | 2 | WAIT-02 | 10 |
 | WAIT-03 | 2 | WAIT-04 | 2 |
 | BALANCE-01 | 4 | BALANCE-02 | 4 |
 | BALANCE-03 | 4 | BALANCE-04 | 4 |

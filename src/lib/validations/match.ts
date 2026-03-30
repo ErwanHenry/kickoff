@@ -8,9 +8,7 @@ export const matchCreateSchema = z
   .object({
     title: z.string().max(100).optional(),
     location: z.string().min(1, "Le lieu est requis").max(200),
-    date: z.coerce.date({
-      errorMap: () => ({ message: "Date invalide" }),
-    }),
+    date: z.coerce.date(),
     maxPlayers: z
       .number()
       .min(6, "Minimum 6 joueurs")

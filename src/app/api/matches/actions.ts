@@ -95,5 +95,9 @@ export async function publishMatch(matchId: string) {
   revalidatePath(`/match/${matchId}`);
 
   // Redirect to public match page
-  redirect(`/m/${updated.shareToken}`);
+  if (updated) {
+    redirect(`/m/${updated.shareToken}`);
+  } else {
+    return { error: "Erreur lors de la publication" };
+  }
 }

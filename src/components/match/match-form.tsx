@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { matchCreateSchema, type MatchCreateInput } from "@/lib/validations/match";
-import { createMatch } from "@/app/api/matches/route";
+import { createMatch } from "@/app/api/matches/actions";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,11 +28,11 @@ export function MatchForm() {
     formState: { errors },
     watch,
   } = useForm<MatchCreateInput>({
-    resolver: zodResolver(matchCreateSchema),
+    resolver: zodResolver(matchCreateSchema) as any,
     defaultValues: {
       maxPlayers: 14,
       minPlayers: 10,
-      recurrence: "none",
+      recurrence: "none" as const,
     },
   });
 
@@ -49,21 +49,28 @@ export function MatchForm() {
   const onSubmit = async (data: MatchCreateInput, isDraft: boolean) => {
     setIsSubmitting(true);
     try {
-      const match = await createMatch(data);
+      const result = await createMatch(data);
 
-      if (match.error) {
-        toast.error(match.error);
+      if (!result) {
+        toast.error("Erreur lors de la création du match");
         return;
       }
 
-      if (isDraft) {
-        toast.success("Brouillon enregistré");
-        router.push(`/match/${match.id}`);
-      } else {
-        // Publish directly - this would need a publishMatch call
-        // For now, redirect to match detail
-        toast.success("Match créé avec succès");
-        router.push(`/match/${match.id}`);
+      if ("error" in result && result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      if ("id" in result) {
+        if (isDraft) {
+          toast.success("Brouillon enregistré");
+          router.push(`/match/${result.id}`);
+        } else {
+          // Publish directly - this would need a publishMatch call
+          // For now, redirect to match detail
+          toast.success("Match créé avec succès");
+          router.push(`/match/${result.id}`);
+        }
       }
     } catch (error) {
       toast.error("Erreur lors de la création du match");
@@ -73,11 +80,13 @@ export function MatchForm() {
     }
   };
 
+  const handleFormSubmit = (data: MatchCreateInput) => onSubmit(data, false);
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit((data) => onSubmit(data, false))();
+        handleSubmit(handleFormSubmit)(e);
       }}
       className="space-y-4 max-w-md mx-auto w-full"
     >
@@ -261,8 +270,7 @@ export function MatchForm() {
           type="button"
           variant="outline"
           className="flex-1 h-12"
-          onClick={(e) => {
-            e.preventDefault();
+          onClick={() => {
             handleSubmit((data) => onSubmit(data, true))();
           }}
           disabled={isSubmitting}
