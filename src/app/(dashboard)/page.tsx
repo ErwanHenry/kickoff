@@ -1,52 +1,198 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { db } from "@/db";
+import { matches, matchPlayers } from "@/db/schema";
+import { eq, and, sql, desc, or } from "drizzle-orm";
+import { MatchCard } from "@/components/match/match-card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User, LogOut, Plus } from "lucide-react";
 
 export const metadata = {
   title: "Dashboard | kickoff",
-  description: "Gere tes matchs de foot",
+  description: "Gère tes matchs de foot",
 };
 
-export default function DashboardPage() {
+/**
+ * Dashboard page
+ * Shows upcoming match, recent matches, and navigation
+ * Protected route - redirects to /login if not authenticated
+ *
+ * Per REQUIREMENTS.md MATCH-07 and Phase 3 dashboard requirements
+ */
+export default async function DashboardPage() {
+  // Get session
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // Redirect to login if not authenticated
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  // Get user's matches ordered by date
+  const userMatches = await db
+    .select({
+      id: matches.id,
+      title: matches.title,
+      location: matches.location,
+      date: matches.date,
+      maxPlayers: matches.maxPlayers,
+      status: matches.status,
+      shareToken: matches.shareToken,
+      createdAt: matches.createdAt,
+    })
+    .from(matches)
+    .where(eq(matches.createdBy, session.user.id))
+    .orderBy(desc(matches.date));
+
+  // Get confirmed counts for all matches
+  const matchesWithCounts = await Promise.all(
+    userMatches.map(async (match) => {
+      const [confirmedCount] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(matchPlayers)
+        .where(
+          and(
+            eq(matchPlayers.matchId, match.id),
+            eq(matchPlayers.status, "confirmed")
+          )
+        );
+
+      return {
+        ...match,
+        confirmedCount: confirmedCount?.count ?? 0,
+      };
+    })
+  );
+
+  // Separate into upcoming and recent
+  const now = new Date();
+  const upcoming = matchesWithCounts.filter(
+    (m) => m.date >= now && ["draft", "open", "full"].includes(m.status)
+  );
+  const recent = matchesWithCounts
+    .filter((m) => m.date < now || ["locked", "played", "rated"].includes(m.status))
+    .slice(0, 5);
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Bienvenue sur kickoff</h1>
-        <p className="text-muted-foreground">
-          Ton dashboard pour organiser tes matchs
-        </p>
+    <div className="space-y-6 max-w-2xl mx-auto px-4">
+      {/* Header with user greeting and actions */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Salut {session.user.name} 👋</h1>
+          <p className="text-muted-foreground">
+            Prêt pour le prochain match ?
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button asChild className="bg-primary hover:bg-primary/90">
+            <Link href="/matches/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Nouveau match
+            </Link>
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <User className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile">Profil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/api/auth/signout">Déconnexion</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Commence ici</CardTitle>
-          <CardDescription>
-            Cree ton premier match et invite tes potes
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link
-            href="/dashboard/matches/new"
-            className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-medium px-4 py-2 hover:bg-primary/90 transition-colors"
-          >
-            Creer un match
-          </Link>
-          <p className="text-sm text-muted-foreground mt-4">
-            Cette fonctionnalite arrive dans la Phase 2.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Upcoming match section */}
+      <section>
+        <h2 className="text-lg font-semibold mb-3">Prochain match</h2>
+        {upcoming.length > 0 ? (
+          <MatchCard match={upcoming[0]} variant="upcoming" />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Aucun match à venir</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Crée ton premier match et invite tes potes !
+              </p>
+              <Button asChild className="w-full">
+                <Link href="/matches/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Créer un match
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Prochaines etapes</CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
-          <p>Phase 1: Fondations (tu es la)</p>
-          <p>Phase 2: Creation de matchs et RSVP</p>
-          <p>Phase 3: Waitlist et dashboard</p>
-          <p>Phase 4: Team balancing</p>
-        </CardContent>
-      </Card>
+      {/* Recent matches section */}
+      {recent.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Mes matchs</h2>
+            {recent.length >= 5 && (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/dashboard/matches">Voir tout</Link>
+              </Button>
+            )}
+          </div>
+          <div className="space-y-3">
+            {recent.map((match) => (
+              <MatchCard key={match.id} match={match} variant="recent" />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Mobile navigation placeholder (Phase 3) */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t md:hidden">
+        <div className="flex items-center justify-around py-2">
+          <Button variant="ghost" size="sm" asChild className="flex-1">
+            <Link href="/dashboard" className="flex flex-col items-center gap-1">
+              <span className="text-xs">Accueil</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild className="flex-1">
+            <Link href="/dashboard/matches" className="flex flex-col items-center gap-1">
+              <span className="text-xs">Matchs</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild className="flex-1">
+            <Link href="/dashboard/groups" className="flex flex-col items-center gap-1">
+              <span className="text-xs">Groupes</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild className="flex-1">
+            <Link href="/profile" className="flex flex-col items-center gap-1">
+              <span className="text-xs">Profil</span>
+            </Link>
+          </Button>
+        </div>
+      </nav>
     </div>
   );
 }
