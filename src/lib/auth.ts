@@ -55,10 +55,10 @@ export const auth = betterAuth({
     }),
   ],
   // Allow any origin for Vercel deployments (preview + production)
-  // better-auth will handle security via cookies and CSRF tokens
-  trustedOrigins: process.env.NODE_ENV === "development"
-    ? ["http://localhost:3000"]
-    : async () => [], // Empty array from function allows all origins
+  // In production, don't set trustedOrigins to allow all origins
+  ...(process.env.NODE_ENV === "development" && {
+    trustedOrigins: ["http://localhost:3000"],
+  }),
 });
 
 // Type exports
