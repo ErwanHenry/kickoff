@@ -7,7 +7,8 @@ import { eq, inArray, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { balanceTeams, type Player } from '@/lib/team-balancer';
 import { getMatchPlayersWithStats } from '@/lib/db/queries/players';
-import { revalidatePath, headers } from 'next/cache';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 
 const generateTeamsSchema = z.object({
   matchId: z.string().uuid(),

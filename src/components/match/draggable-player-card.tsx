@@ -30,9 +30,9 @@ export function DraggablePlayerCard({ player, team, isDragging }: DraggablePlaye
   };
 
   // Calculate player score for display
-  const playerScore = (player.avgTechnique * 0.4 +
-                       player.avgPhysique * 0.3 +
-                       player.avgCollectif * 0.3).toFixed(1);
+  const playerScore = ((Number(player.avgTechnique) || 3.0) * 0.4 +
+                       (Number(player.avgPhysique) || 3.0) * 0.3 +
+                       (Number(player.avgCollectif) || 3.0) * 0.3).toFixed(1);
 
   // Get initials for avatar
   const initials = player.name

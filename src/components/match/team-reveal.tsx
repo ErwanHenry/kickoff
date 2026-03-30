@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { DndContext, DragEndEvent, DragOverlay, closestCenter, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCenter, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,8 +33,8 @@ export function TeamReveal({ matchId, initialTeams, isLocked = false }: TeamReve
 
   const sensors = useSensors(touchSensor);
 
-  const handleDragStart = (event: { active: { id: string } }) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -79,8 +79,8 @@ export function TeamReveal({ matchId, initialTeams, isLocked = false }: TeamReve
     }
 
     // Recalculate scores
-    const scoreA = newTeamA.reduce((sum, p) => sum + p.avgTechnique * 0.4 + p.avgPhysique * 0.3 + p.avgCollectif * 0.3, 0);
-    const scoreB = newTeamB.reduce((sum, p) => sum + p.avgTechnique * 0.4 + p.avgPhysique * 0.3 + p.avgCollectif * 0.3, 0);
+    const scoreA = newTeamA.reduce((sum, p) => sum + (Number(p.avgTechnique) || 3.0) * 0.4 + (Number(p.avgPhysique) || 3.0) * 0.3 + (Number(p.avgCollectif) || 3.0) * 0.3, 0);
+    const scoreB = newTeamB.reduce((sum, p) => sum + (Number(p.avgTechnique) || 3.0) * 0.4 + (Number(p.avgPhysique) || 3.0) * 0.3 + (Number(p.avgCollectif) || 3.0) * 0.3, 0);
 
     setTeams({
       teamA: { players: newTeamA, totalScore: scoreA, playerCount: newTeamA.length },
