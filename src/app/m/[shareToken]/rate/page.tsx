@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Metadata } from "next";
 import { getMatchByShareToken } from "@/lib/db/queries/ratings";
 import { getMatchPlayersForRating, getExistingRatings, getMatchRatingProgress } from "@/lib/db/queries/ratings";
-import { RatingForm } from "@/components/rating/rating-form";
+import { GuestRatingWrapper } from "@/components/rating/guest-rating-wrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FootballIcon } from "@/components/icons/football-icons";
@@ -205,8 +205,8 @@ export default async function GuestRatingPage({ params }: PageProps) {
           </p>
         </header>
 
-        {/* Rating form */}
-        <RatingForm
+        {/* Rating form with guest CTA */}
+        <GuestRatingWrapper
           matchId={match.id}
           shareToken={shareToken}
           players={players.map((p) => ({
@@ -215,7 +215,6 @@ export default async function GuestRatingPage({ params }: PageProps) {
             avatar: p.id,
           }))}
           existingRatings={existingRatings}
-          isGuest={true}
           submitRatings={submitRatings}
           ratingProgress={ratingProgress}
         />

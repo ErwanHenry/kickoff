@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { matchPlayers, users, playerStats, matches, ratings } from '@/db/schema';
-import { eq, and, sql, or, desc, limit } from 'drizzle-orm';
+import { eq, and, sql, or, desc } from 'drizzle-orm';
 import type { Player, BalanceResult } from '@/lib/team-balancer';
 import { parseDecimal } from '@/lib/stats';
 
@@ -342,7 +342,7 @@ export async function getPlayerComments(
   userId: string,
   limitCount: number = 10
 ): Promise<CommentEntry[]> {
-  return db
+  const comments = await db
     .select({
       id: ratings.id,
       comment: ratings.comment,
@@ -361,4 +361,10 @@ export async function getPlayerComments(
     )
     .orderBy(desc(ratings.createdAt))
     .limit(limitCount);
+
+  // Filter out null comments and cast to string (safe due to WHERE clause)
+  return comments.filter((c) => c.comment !== null).map((c) => ({
+    ...c,
+    comment: c.comment as string,
+  }));
 }

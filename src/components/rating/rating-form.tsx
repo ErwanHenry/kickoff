@@ -42,6 +42,7 @@ interface RatingFormProps {
     percentage: number;
     isRated: boolean;
   };
+  onRatingSuccess?: (ratedCount: number) => void;
 }
 
 /**
@@ -58,6 +59,7 @@ export function RatingForm({
   isGuest,
   submitRatings,
   ratingProgress,
+  onRatingSuccess,
 }: RatingFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -159,8 +161,13 @@ export function RatingForm({
         toast.error(result.error);
       } else if (result.success) {
         setIsSubmitted(true);
-        const count = result.ratingsCount || 0;
+        const count = result.ratingsCount || ratedCount;
         toast.success(`Notes envoyées ! (${count} joueur${count > 1 ? "s" : ""} noté${count > 1 ? "s" : ""})`);
+
+        // Call onRatingSuccess callback if provided (for external CTA handling)
+        if (onRatingSuccess) {
+          onRatingSuccess(count);
+        }
 
         // Redirect after 2 seconds (user) or show CTA (guest)
         setTimeout(() => {
