@@ -315,3 +315,47 @@ kickoff — Organise tes matchs de foot
 
   console.log(`Sent post-match rating email to ${userEmail}`);
 }
+
+/**
+ * Send welcome email after user registration
+ * Per CONTEXT.md D-11: Plain text, warm welcome, explains app value
+ * Per plan 10-02 Task 6: Welcome email template
+ *
+ * Note: Always sent (no preference check) — it's onboarding, not notification
+ *
+ * @param userName - The user's first name
+ * @param userEmail - The user's email address
+ */
+export async function sendWelcomeEmail(
+  userName: string,
+  userEmail: string
+): Promise<void> {
+  if (!userEmail) {
+    console.log('Skipping welcome email: user has no email');
+    return;
+  }
+
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard`;
+
+  const text = `
+Bienvenue sur kickoff, ${userName} !
+
+Tu peux maintenant créer tes propres matchs et organiser des parties entre potes.
+
+Commence ici :
+${dashboardUrl}
+
+À vendredi !
+--
+kickoff — Organise tes matchs de foot
+  `.trim();
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM || 'noreply@kickoff.app',
+    to: userEmail,
+    subject: 'Bienvenue sur kickoff !',
+    text,
+  });
+
+  console.log(`Sent welcome email to ${userEmail}`);
+}
