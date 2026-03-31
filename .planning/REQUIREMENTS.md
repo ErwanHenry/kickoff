@@ -63,13 +63,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Ratings
 
-- [ ] **RATE-01**: Player can rate teammates on 3 axes (technique, physique, collectif) 1-5 stars
-- [ ] **RATE-02**: Player can add optional comment (max 280 chars)
-- [ ] **RATE-03**: Ratings are anonymous (rated player sees averages, not rater)
-- [ ] **RATE-04**: Guest can rate matches they participated in (via guest token)
-- [ ] **RATE-05**: User can rate matches they participated in (via session)
-- [ ] **RATE-06**: Player cannot rate same teammate more than once per match
-- [ ] **RATE-07**: Player stats recalculate incrementally after each rating
+- [x] **RATE-01**: Player can rate teammates on 3 axes (technique, physique, collectif) 1-5 stars
+- [x] **RATE-02**: Player can add optional comment (max 280 chars)
+- [x] **RATE-03**: Ratings are anonymous (rated player sees averages, not rater)
+- [x] **RATE-04**: Guest can rate matches they participated in (via guest token)
+- [x] **RATE-05**: User can rate matches they participated in (via session)
+- [x] **RATE-06**: Player cannot rate same teammate more than once per match
+- [x] **RATE-07**: Player stats recalculate incrementally after each rating
 - [ ] **RATE-08**: Match status changes to "rated" when ≥50% of players rated
 
 ### Player Profiles
@@ -207,13 +207,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POST-03 | Phase 5 | Pending |
 | POST-04 | Phase 5 | Pending |
 | POST-05 | Phase 5 | Pending |
-| RATE-01 | Phase 6 | Pending |
-| RATE-02 | Phase 6 | Pending |
-| RATE-03 | Phase 6 | Pending |
-| RATE-04 | Phase 6 | Pending |
-| RATE-05 | Phase 6 | Pending |
-| RATE-06 | Phase 6 | Pending |
-| RATE-07 | Phase 6 | Pending |
+| RATE-01 | Phase 6 | Complete |
+| RATE-02 | Phase 6 | Complete |
+| RATE-03 | Phase 6 | Complete |
+| RATE-04 | Phase 6 | Complete |
+| RATE-05 | Phase 6 | Complete |
+| RATE-06 | Phase 6 | Complete |
+| RATE-07 | Phase 6 | Complete |
 | RATE-08 | Phase 6 | Pending |
 | PROFILE-01 | Phase 7 | Pending |
 | PROFILE-02 | Phase 7 | Pending |
