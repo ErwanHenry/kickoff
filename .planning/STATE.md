@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 10
 status: executing
-last_updated: "2026-03-31T20:30:51.119Z"
+last_updated: "2026-03-31T20:38:00.000Z"
 progress:
   total_phases: 12
   completed_phases: 9
   total_plans: 36
-  completed_plans: 30
-  percent: 83
+  completed_plans: 31
+  percent: 86
 ---
 
 # STATE: kickoff
@@ -27,15 +27,15 @@ progress:
 A Progressive Web App that lets organizers create football matches and share a WhatsApp link. Players RSVP with one tap (no account required). After the match, players rate teammates on 3 axes (technique, physique, collectif), which feeds into intelligent team balancing for future matches.
 
 **Current Focus:** Phase 10 — polish-production
-**Next Phase:** Phase 10 (Polish & Production) or Phase 11 (Guest → User Merge)
+**Next Phase:** Phase 10 (Polish & Production) - Plan 04
 
 ## Current Position
 
 Phase: 10 (polish-production) — EXECUTING
 Plan: 4 of 5
-Plans: 3/3 complete (09-00, 09-01, 09-02)
-**Status:** Ready to execute
-**Progress:** [████████░░] 83%
+Plans: 4/4 complete (10-00, 10-01, 10-02, 10-03)
+**Status:** Ready for next plan
+**Progress:** [█████████░] 86%
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Plans: 3/3 complete (09-00, 09-01, 09-02)
 | Phase 10 P00 | 177 | 5 tasks | 5 files |
 | Phase 10 P01 | 124 | 4 tasks | 4 files |
 | Phase 10 P02 | 1200 | 10 tasks | 8 files |
+| Phase 10 P03 | ~5 min | 4 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -121,17 +122,60 @@ Plans: 3/3 complete (09-00, 09-01, 09-02)
 
 ### Current Blockers
 
-None — Phase 09 complete. Ready for Phase 10 (Polish & Production) or Phase 11 (Guest → User Merge).
+None — Phase 10 Plan 03 complete. Ready for Phase 10 Plan 04 (Final Polish & Deploy).
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 09 — Recurrence & Automation (3/3 plans)
+**Last Action:** Completed Phase 10 Plan 03 — Guest-to-User Merge (AUTH-05)
 
-- 09-00: Test infrastructure (18 test stubs)
-- 09-01: Vercel Cron infrastructure (5 tasks)
-- 09-02: Email notifications for recurring matches (2 tasks)
+- 10-03: Guest-to-user account merge (4 tasks, ~5 min, 4 files)
+  - Created mergeGuestToUser function with transaction
+  - Added recalculatePlayerStats to stats.ts
+  - Integrated merge into registration flow (registerAction)
+  - Verified guest CTA links in rating success component
 
-**Next Action:** Execute Phase 10 (Polish & Production) or Phase 11 (Guest → User Merge)
+**Next Action:** Execute Phase 10 Plan 04 (Final Polish & Deploy) or continue with remaining polish plans
+
+**Context for Next Session:**
+
+Phase 10 Plan 03 COMPLETE — Guest-to-user account merge infrastructure (AUTH-05):
+
+**Wave 2 (Plan 10-03):**
+
+- mergeGuestToUser function: Transfers guest data to user account atomically
+  - Updates match_players (RSVPs) with new user_id
+  - Reattributes ratings (given and received) to user
+  - Recalculates player_stats from merged data
+  - Deletes guest_token cookie after successful merge
+  - Uses database transaction for atomicity
+  - Handles edge cases: no token, no history, errors gracefully
+
+- recalculatePlayerStats function: Database-driven stats recalculation
+  - Counts matches played, attended, no-show
+  - Calculates average ratings (technique, physique, collectif)
+  - Computes weighted overall score (0.4*tech + 0.3*phys + 0.3*coll)
+  - Upserts player_stats with onConflictDoUpdate
+
+- registerAction Server Action: Registration with merge integration
+  - Calls better-auth signUpEmail API
+  - Triggers mergeGuestToUser after user creation
+  - Creates default notification preferences
+  - Sends welcome email
+  - Returns merge info for UI feedback
+
+- Guest CTA verified: "Sauvegarde tes stats !" card after rating submission
+  - "Créer un compte gratuitement" button → /register
+  - Guest token cookie preserved automatically (httpOnly)
+
+**Verification:**
+
+- TypeScript compilation passes: `pnpm typecheck`
+- All 14 merge tests pass: `pnpm test src/lib/__tests__/unit/merge.test.ts`
+- All requirements satisfied: AUTH-05
+
+**Outstanding Questions:**
+
+- None
 
 **Context for Next Session:**
 
@@ -210,6 +254,13 @@ Phase 09 COMPLETE — All recurrence and automation infrastructure implemented:
   - 09-02: Email notifications (branded HTML template, French locale, cron integration)
   - All requirements satisfied: RECUR-01, RECUR-02, RECUR-03, RECUR-04, MATCH-03
   - TypeScript compilation passes, all tests pass
+- **2026-03-31:** Phase 10 Plan 03 COMPLETE — Guest-to-User Merge (AUTH-05)
+  - Created mergeGuestToUser function with transaction (commit 988a32d)
+  - Added recalculatePlayerStats to stats.ts (commit 5bd660d)
+  - Integrated merge into registration flow (commit 924fc7c)
+  - Verified guest CTA links in rating success component
+  - All requirements satisfied: AUTH-05
+  - TypeScript compilation passes, all 14 merge tests pass
 
 ---
 *This document is updated at phase transitions and after completing major milestones*
