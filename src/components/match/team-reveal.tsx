@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BalanceIndicator } from '@/components/match/balance-indicator';
 import { DraggablePlayerCard } from '@/components/match/draggable-player-card';
+import { FootballIcon } from '@/components/icons/football-icons';
 import { reassignPlayer } from '@/lib/actions/teams';
 import { toast } from 'sonner';
 import type { Player } from '@/lib/team-balancer';
@@ -125,10 +126,13 @@ export function TeamReveal({ matchId, initialTeams, isLocked = false }: TeamReve
         {/* Teams grid */}
         <div className="grid grid-cols-2 gap-4">
           {/* Team A */}
-          <Card className="p-4">
+          <Card className="p-4 bg-chalk-pure shadow-card rounded-card">
             <div className="mb-3">
-              <h3 className="font-semibold text-lg text-blue-700">Équipe A</h3>
-              <p className="text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <FootballIcon name="jersey" size={20} className="text-team-a" />
+                <h3 className="font-semibold text-lg text-team-a">Équipe A</h3>
+              </div>
+              <p className="text-sm text-slate-500 font-mono">
                 Score: {teams.teamA.totalScore.toFixed(1)} • {teams.teamA.playerCount} joueurs
               </p>
             </div>
@@ -150,10 +154,13 @@ export function TeamReveal({ matchId, initialTeams, isLocked = false }: TeamReve
           </Card>
 
           {/* Team B */}
-          <Card className="p-4">
+          <Card className="p-4 bg-chalk-pure shadow-card rounded-card">
             <div className="mb-3">
-              <h3 className="font-semibold text-lg text-red-700">Équipe B</h3>
-              <p className="text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <FootballIcon name="jersey" size={20} className="text-team-b" />
+                <h3 className="font-semibold text-lg text-team-b">Équipe B</h3>
+              </div>
+              <p className="text-sm text-slate-500 font-mono">
                 Score: {teams.teamB.totalScore.toFixed(1)} • {teams.teamB.playerCount} joueurs
               </p>
             </div>
