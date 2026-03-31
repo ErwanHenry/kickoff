@@ -39,6 +39,18 @@ export const groupRoleEnum = pgEnum("group_role", ["captain", "manager", "player
 
 // ============ TABLES ============
 
+export const notificationPreferences = pgTable("notification_preferences", {
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull()
+    .primaryKey(),
+  waitlistPromotion: boolean("waitlist_promotion").notNull().default(true),
+  deadlineReminder: boolean("deadline_reminder").notNull().default(true),
+  postMatchRating: boolean("post_match_rating").notNull().default(true),
+  newRecurringMatch: boolean("new_recurring_match").notNull().default(true),
+  welcomeEmail: boolean("welcome_email").notNull().default(true),
+});
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").unique(),
@@ -177,12 +189,20 @@ export const playerStats = pgTable(
 
 // ============ RELATIONS ============
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   groupsCreated: many(groups),
   groupMemberships: many(groupMembers),
   matchesCreated: many(matches),
   matchParticipations: many(matchPlayers),
   stats: many(playerStats),
+  notificationPreferences: one(notificationPreferences),
+}));
+
+export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [notificationPreferences.userId],
+    references: [users.id],
+  }),
 }));
 
 export const groupsRelations = relations(groups, ({ one, many }) => ({
@@ -267,3 +287,5 @@ export type Rating = typeof ratings.$inferSelect;
 export type NewRating = typeof ratings.$inferInsert;
 export type PlayerStats = typeof playerStats.$inferSelect;
 export type NewPlayerStats = typeof playerStats.$inferInsert;
+export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
+export type NewNotificationPreferences = typeof notificationPreferences.$inferInsert;
