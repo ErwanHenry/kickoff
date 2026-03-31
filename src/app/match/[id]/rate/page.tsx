@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getMatchById } from "@/lib/db/queries/match-by-id";
 import { getMatchPlayersForRating, getExistingRatings, getMatchRatingProgress } from "@/lib/db/queries/ratings";
-import { RatingForm } from "@/components/rating/rating-form";
+import { UserRatingWrapper } from "@/components/rating/user-rating-wrapper";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FootballIcon } from "@/components/icons/football-icons";
@@ -188,16 +188,16 @@ export default async function UserRatingPage({ params }: PageProps) {
           </p>
         </header>
 
-        {/* Rating form */}
-        <RatingForm
+        {/* Rating form with user CTA */}
+        <UserRatingWrapper
           matchId={matchId}
+          userId={session.user.id}
           players={players.map((p) => ({
             id: p.id,
             name: p.name || "Joueur",
             avatar: p.id,
           }))}
           existingRatings={existingRatings}
-          isGuest={false}
           submitRatings={submitRatings}
           ratingProgress={ratingProgress}
         />
