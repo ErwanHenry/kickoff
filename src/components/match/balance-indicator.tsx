@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { FootballIcon } from '@/components/icons/football-icons';
 import { cn } from '@/lib/utils';
 
 interface BalanceIndicatorProps {
@@ -11,39 +12,40 @@ interface BalanceIndicatorProps {
 
 export function BalanceIndicator({ diff, teamSize, showDiff = true }: BalanceIndicatorProps) {
   // Normalize diff by team size (larger teams tolerate larger absolute diff)
-  // Thresholds from RESEARCH.md "Code Examples" section
+  // Thresholds from plan: 0.15, 0.4
   const normalizedDiff = diff / teamSize;
 
   let label: string;
-  let variant: 'default' | 'secondary' | 'destructive';
   let bgColor: string;
+  let textColor: string;
 
   if (normalizedDiff < 0.15) {
     label = 'Équilibré ✓';
-    variant = 'default'; // Green in shadcn/ui
-    bgColor = 'bg-green-100 text-green-800 border-green-200';
+    bgColor = 'bg-lime-glow';
+    textColor = 'text-lime-dark';
   } else if (normalizedDiff < 0.4) {
     label = 'Léger avantage';
-    variant = 'secondary'; // Gray/yellow in shadcn/ui
-    bgColor = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    bgColor = 'bg-yellow-card';
+    textColor = 'text-yellow-card';
   } else {
     label = 'Déséquilibré ⚠️';
-    variant = 'destructive'; // Red in shadcn/ui
-    bgColor = 'bg-red-100 text-red-800 border-red-200';
+    bgColor = 'bg-red-card';
+    textColor = 'text-red-card';
   }
 
   return (
     <Badge
-      variant={variant}
       className={cn(
-        'text-sm font-medium px-3 py-1',
-        bgColor
+        'text-sm font-medium px-3 py-1 rounded-badge flex items-center gap-1.5',
+        bgColor,
+        textColor
       )}
     >
+      <FootballIcon name="ball" size={16} />
       {label}
       {showDiff && (
-        <span className="ml-2 text-xs opacity-70">
-          (diff: {diff.toFixed(1)})
+        <span className="ml-1 font-mono text-xs opacity-70">
+          {diff.toFixed(1)}
         </span>
       )}
     </Badge>
