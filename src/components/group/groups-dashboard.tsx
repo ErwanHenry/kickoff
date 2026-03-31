@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { JoinGroupForm } from "@/components/group/join-group-form";
@@ -55,15 +56,12 @@ export function GroupsDashboard({ userGroups }: GroupsDashboardProps) {
 
         {/* Action buttons */}
         <div className="flex flex-wrap gap-3 mt-4">
-          <Button
-            asChild
-            className="bg-pitch text-white hover:bg-pitch/90"
-          >
-            <Link href="/dashboard/groups/new">
+          <Link href="/dashboard/groups/new">
+            <Button className="bg-pitch text-white hover:bg-pitch/90">
               <FootballIcon name="cornerFlag" size={16} className="mr-2" />
               Créer un groupe
-            </Link>
-          </Button>
+            </Button>
+          </Link>
 
           <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
             <DialogTrigger asChild>
@@ -98,15 +96,12 @@ export function GroupsDashboard({ userGroups }: GroupsDashboardProps) {
               Crée ton premier groupe ou rejoins-en un pour commencer à organiser des matchs
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                asChild
-                className="bg-pitch text-white hover:bg-pitch/90"
-              >
-                <Link href="/dashboard/groups/new">
+              <Link href="/dashboard/groups/new">
+                <Button className="bg-pitch text-white hover:bg-pitch/90">
                   <Plus className="mr-2 h-4 w-4" />
                   Créer un groupe
-                </Link>
-              </Button>
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 onClick={() => setIsJoinDialogOpen(true)}
@@ -151,6 +146,3 @@ export function GroupsDashboard({ userGroups }: GroupsDashboardProps) {
     </div>
   );
 }
-
-// Import Link at the bottom for client component
-import { Link } from "next/link";
