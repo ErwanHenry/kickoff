@@ -1,9 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { matches, matchPlayers } from "@/db/schema";
+import { matches, matchPlayers, users } from "@/db/schema";
 import { eq, sql, and, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { sendWaitlistPromotionEmail } from "@/lib/utils/emails";
 
 /**
  * Promote the first waitlisted player to confirmed status
@@ -95,6 +96,48 @@ export async function promoteFirstWaitlisted(matchId: string) {
         },
       };
     });
+
+    // Send waitlist promotion email if promoted player has user account
+    // Per plan 10-02 Task 7: Integrate waitlist promotion email into RSVP flow
+    if (result.promotedPlayer) {
+      try {
+        // Fetch user details if userId exists (registered user)
+        if (updatedPlayer.userId) {
+          const [user] = await db
+            .select({ name: users.name, email: users.email })
+            .from(users)
+            .where(eq(users.id, updatedPlayer.userId))
+            .limit(1);
+
+          if (user) {
+            // Fetch match details for email
+            const [match] = await db
+              .select({ title: matches.title, date: matches.date, location: matches.location, shareToken: matches.shareToken })
+              .from(matches)
+              .where(eq(matches.id, matchId))
+              .limit(1);
+
+            if (match) {
+              await sendWaitlistPromotionEmail(
+                updatedPlayer.userId,
+                user.name,
+                user.email,
+                match.title,
+                match.date,
+                match.location,
+                match.shareToken
+              );
+            }
+          }
+        } else if (updatedPlayer.guestName && updatedPlayer.guestToken) {
+          // Guest without account — skip email (no email address)
+          console.log(`Guest ${updatedPlayer.guestName} promoted (no email sent)`);
+        }
+      } catch (emailError) {
+        // Log but don't fail the promotion
+        console.error('Failed to send waitlist promotion email:', emailError);
+      }
+    }
 
     // Revalidate the public match page
     // Need to fetch match for shareToken
