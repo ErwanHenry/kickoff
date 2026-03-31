@@ -3,6 +3,37 @@ import { ratings, matchPlayers, users, playerStats, matches } from "@/db/schema"
 import { eq, and, sql, count, desc } from "drizzle-orm";
 
 /**
+ * Get a match by shareToken
+ * Returns match with basic info for rating page access control
+ * Returns null if not found
+ */
+export async function getMatchByShareToken(shareToken: string) {
+  const [match] = await db
+    .select({
+      id: matches.id,
+      title: matches.title,
+      date: matches.date,
+      location: matches.location,
+      status: matches.status,
+      shareToken: matches.shareToken,
+      groupId: matches.groupId,
+    })
+    .from(matches)
+    .where(eq(matches.shareToken, shareToken))
+    .limit(1);
+
+  return match || null;
+}
+
+/**
+ * Verify match status is "played" or "rated"
+ * Returns true if match can be rated, false otherwise
+ */
+export function verifyMatchPlayed(match: { status: string }): boolean {
+  return match.status === "played" || match.status === "rated";
+}
+
+/**
  * Get all players from a match that the rater can rate
  * Excludes the rater themselves and only includes players who attended=true
  * Returns player info with names and avatars (initials)
