@@ -4,6 +4,7 @@ import { groupMembers, users, groups, matches } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { getUserNotificationPreferences } from '@/lib/db/queries/users';
 
 /**
  * Send email notification for recurring match creation
@@ -135,4 +136,69 @@ export async function sendRecurringMatchNotification(
   });
 
   console.log(`Sent recurring match notification for ${matchId} to ${membersWithEmails.length} recipients`);
+}
+
+/**
+ * Send waitlist promotion email when player is promoted from waitlist to confirmed
+ * Per CONTEXT.md D-11: Plain text, casual French tone, includes match link
+ * Per plan 10-02 Task 3: Waitlist promotion email template
+ *
+ * @param userId - The user ID to send email to
+ * @param userName - The user's first name
+ * @param userEmail - The user's email address (nullable)
+ * @param matchTitle - The match title (nullable, falls back to date)
+ * @param matchDate - The match date
+ * @param matchLocation - The match location
+ * @param shareToken - The match share token for link
+ */
+export async function sendWaitlistPromotionEmail(
+  userId: string,
+  userName: string,
+  userEmail: string | null,
+  matchTitle: string | null,
+  matchDate: Date,
+  matchLocation: string,
+  shareToken: string
+): Promise<void> {
+  // Handle missing email (anti-pattern: no errors for null email)
+  if (!userEmail) {
+    console.log(`Skipping waitlist promotion: user ${userId} has no email`);
+    return;
+  }
+
+  // Check user preferences (D-10, D-14)
+  const prefs = await getUserNotificationPreferences(userId);
+  if (!prefs.waitlistPromotion) {
+    console.log(`Skipping waitlist promotion: user ${userId} opted out`);
+    return;
+  }
+
+  // Format match title (fallback to date)
+  const title = matchTitle || `Match du ${format(matchDate, 'dd MMM', { locale: fr })}`;
+
+  // Build match URL
+  const matchUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/m/${shareToken}`;
+
+  // Plain text email body (D-09)
+  const text = `
+Salut ${userName} !
+
+Bonne nouvelle : une place s'est libérée pour "${title}".
+
+Tu peux maintenant confirmer ta présence ici :
+${matchUrl}
+
+À vendredi !
+--
+kickoff — Organise tes matchs de foot
+  `.trim();
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM || 'noreply@kickoff.app',
+    to: userEmail,
+    subject: 'Bonne nouvelle !',
+    text,
+  });
+
+  console.log(`Sent waitlist promotion email to ${userEmail}`);
 }
