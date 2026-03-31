@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getParentMatchesNeedingNextOccurrence } from '@/lib/db/queries/recurrence';
 import { createRecurringMatchOccurrence } from '@/lib/actions/recurrence';
+import { sendRecurringMatchNotification } from '@/lib/utils/emails';
 
 /**
  * Vercel Cron endpoint for recurring match creation
@@ -9,9 +10,7 @@ import { createRecurringMatchOccurrence } from '@/lib/actions/recurrence';
  *
  * Per D-11: Protect with CRON_SECRET header validation
  * Per D-12: Return 401 if secret doesn't match, log failed attempts
- *
- * NOTE: Email notifications are NOT sent in this plan (handled in Plan 09-02)
- * Only create matches in this plan.
+ * Per Plan 09-02: Send email notifications after match creation
  */
 export async function POST(request: Request) {
   // Get headers
@@ -57,6 +56,23 @@ export async function POST(request: Request) {
             throw new Error('Failed to create match: no result returned');
           }
           console.log(`[CRON] Created match ${newMatch.id} for parent ${parent.id}`);
+
+          // Send email notification if group exists (per Plan 09-02)
+          if (parent.groupId) {
+            try {
+              await sendRecurringMatchNotification(newMatch.id, parent.groupId);
+            } catch (emailError) {
+              // Log email error but don't fail the cron job (per anti-pattern)
+              console.error(`[CRON] Failed to send notification for match ${newMatch.id}:`, emailError);
+              return {
+                success: true,
+                matchId: newMatch.id,
+                parentMatchId: parent.id,
+                emailError: emailError instanceof Error ? emailError.message : String(emailError),
+              };
+            }
+          }
+
           return {
             success: true,
             matchId: newMatch.id,
@@ -74,18 +90,26 @@ export async function POST(request: Request) {
     );
 
     // Count succeeded and failed
+    // Matches with emailError are still considered succeeded (match creation is primary concern)
     const succeeded = results.filter(
-      (r): r is PromiseFulfilledResult<{ success: true; matchId: string; parentMatchId: string }> =>
+      (r): r is PromiseFulfilledResult<{ success: true; matchId: string; parentMatchId: string; emailError?: string }> =>
         r.status === 'fulfilled' && r.value.success
+    ).length;
+
+    // Count email errors separately
+    const emailErrors = results.filter(
+      (r): r is PromiseFulfilledResult<{ success: true; matchId: string; parentMatchId: string; emailError?: string }> =>
+        r.status === 'fulfilled' && r.value.success && r.value.emailError
     ).length;
 
     const failed = results.length - succeeded;
 
-    console.log(`[CRON] Completed: ${succeeded} created, ${failed} failed`);
+    console.log(`[CRON] Completed: ${succeeded} created, ${emailErrors} email errors, ${failed} failed`);
 
     return NextResponse.json({
-      message: `Cron completed: ${succeeded} created, ${failed} failed`,
+      message: `Cron completed: ${succeeded} created, ${emailErrors} email errors, ${failed} failed`,
       succeeded,
+      emailErrors,
       failed,
       total: results.length,
     });
