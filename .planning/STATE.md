@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 8
-current_plan: 1
+current_plan: 3
 status: executing
-last_updated: "2026-03-31T16:19:00.000Z"
+last_updated: "2026-03-31T15:16:00.000Z"
 progress:
   total_phases: 11
   completed_phases: 7
   total_plans: 25
-  completed_plans: 21
-  percent: 84
+  completed_plans: 22
+  percent: 88
 ---
 
 # STATE: kickoff
@@ -32,10 +32,10 @@ A Progressive Web App that lets organizers create football matches and share a W
 ## Current Position
 
 Phase: 08 (Groups & Leaderboards) — EXECUTING
-Plan: 08-01 (Group Creation Flow) — COMPLETE
-Plans: 1/3 executing
+Plan: 08-03 (Group Joining & Dashboard) — COMPLETE
+Plans: 3/3 executing
 **Status:** In progress
-**Progress:** [████████░░] 84%
+**Progress:** [████████░░] 88%
 
 ## Performance Metrics
 
@@ -52,6 +52,8 @@ Plans: 1/3 executing
 | Phase 07-player-profiles P01 | ~20 min | 6 tasks | 6 files |
 | Phase 07 P02 | 1255 | 3 tasks | 10 files |
 | Phase 08 P01 | ~25 min | 4 tasks | 5 files |
+| Phase 08 P02 | ~30 min | 5 tasks | 6 files |
+| Phase 08 P03 | ~26 min | 6 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -106,22 +108,23 @@ Plans: 1/3 executing
 
 ### Current Blockers
 
-None — Phase 02 complete, ready for Phase 03 (Team Balancing).
+None — Phase 08 Plan 03 complete, ready for next phase.
 
 ## Session Continuity
 
-**Last Action:** Completed Plan 02-03 (Waitlist Promotion + Dashboard)
+**Last Action:** Completed Plan 08-03 (Group Joining & Dashboard Integration)
 
-**Next Action:** Execute Plan 03-01 (Team Balancing Algorithm)
+**Next Action:** Execute next plan in Phase 08 or move to Phase 09
 
 **Context for Next Session:**
 
-- Phase 02 delivers: Match creation form, public match page, guest RSVP flow, waitlist management, dashboard
-- Waitlist promotion uses FOR UPDATE locking to coordinate with concurrent RSVP operations
-- Dashboard provides central hub for match management with upcoming/recent views
+- Phase 08 Plan 03 delivers: Group joining via invite codes, match-group association, groups dashboard, mobile nav with Groups tab
+- joinGroup Server Action handles invite validation, membership creation with 'player' role, player_stats initialization
+- Match creation form now includes group selection dropdown
+- Groups dashboard at /dashboard/groups shows user's groups separated by role
+- Mobile navigation component added with Groups link
 - Server Actions in lib/actions/, queries in lib/db/queries/
 - Mobile-first UI with max-w-2xl container pattern
-- Critical dependency: Team balancing (Phase 03) depends on player ratings data structure
 
 **Outstanding Questions:**
 
@@ -141,6 +144,14 @@ None — Phase 02 complete, ready for Phase 03 (Team Balancing).
   - 01.1-02a-PLAN: CSS variables mapped to kickoff colors (pitch, lime, chalk, etc.)
   - 01.1-02b-PLAN: Lucide icons replaced with FootballIcon for domain concepts, font-mono applied to data labels
   - 01.1-02c-PLAN: StatusBadges token integrated, shadow-card and rounded-card applied
+- **2026-03-31:** Phase 08 Plan 03 complete - Group Joining & Dashboard Integration (7 commits)
+  - Added joinGroup Server Action with invite validation, player role, stats initialization
+  - Added getGroupByInviteCode query for code validation
+  - Created join-group-form component with 6-char uppercase input
+  - Created group-card component with role badges and hover effects
+  - Created groups dashboard at /dashboard/groups with create/join actions
+  - Created mobile-nav component with Groups tab
+  - Updated match form to include group selection dropdown
 
 ---
 *This document is updated at phase transitions and after completing major milestones*
