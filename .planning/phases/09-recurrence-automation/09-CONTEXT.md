@@ -25,7 +25,7 @@ Weekly recurring matches are automatically created via cron, and group members a
 - **D-05:** New occurrences have different: shareToken (new nanoid), status (always "open"), parentMatchId (links to parent), date (calculated), no players auto-confirmed
 
 ### Match Creation
-- **D-06:** Reuse existing `createMatch` Server Action from `src/app/api/matches/actions.ts` for creating new occurrences
+- **D-06:** Create inline Server Action in `src/lib/actions/recurrence.ts` with direct db.insert() queries. Do NOT reuse existing createMatch Server Action because it requires session validation (cron has no session) and creates draft status (recurring matches need status="open" immediately).
 - **D-07:** Query matches where `recurrence = "weekly"` AND `parentMatchId IS NULL` (parent matches only) to find recurring series
 
 ### Email Notifications
@@ -59,7 +59,7 @@ Weekly recurring matches are automatically created via cron, and group members a
 - `src/db/schema.ts` — Complete database schema with recurrence enum, parentMatchId self-reference, matches and group_members tables
 
 ### Existing Code Patterns
-- `src/app/api/matches/actions.ts` — createMatch Server Action to reuse for new occurrences
+- `src/app/api/matches/actions.ts` — createMatch Server Action for reference patterns (NOT reused due to session validation)
 - `src/lib/auth.ts` — Resend configuration for email sending
 - `src/lib/db/queries/groups.ts` — getGroupMembers query for email recipients
 - `package.json` — date-fns dependency (line 29) for date calculations
@@ -78,7 +78,6 @@ Weekly recurring matches are automatically created via cron, and group members a
 ## Existing Code Insights
 
 ### Reusable Assets
-- **createMatch Server Action** — `src/app/api/matches/actions.ts` has match creation logic with validation
 - **Resend email client** — Configured in `src/lib/auth.ts` for magic link emails, can be reused
 - **getGroupMembers query** — Returns all group members with emails for notifications
 - **date-fns** — Date manipulation library already installed for adding 7 days
@@ -91,7 +90,7 @@ Weekly recurring matches are automatically created via cron, and group members a
 
 ### Integration Points
 - **Cron endpoint** — New API route at `/api/cron/recurring-matches` protected by CRON_SECRET
-- **Match creation** — Call createMatch action with inherited parent settings
+- **Match creation** — Inline db.insert() query in dedicated recurrence Server Action (not reusing createMatch due to session requirements)
 - **Email sending** — Resend.send() with group member emails from getGroupMembers
 - **Environment variables** — Add CRON_SECRET to .env.example and vercel env
 
