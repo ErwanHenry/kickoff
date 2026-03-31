@@ -3,19 +3,30 @@ CREATE TYPE "public"."match_status" AS ENUM('draft', 'open', 'full', 'locked', '
 CREATE TYPE "public"."player_status" AS ENUM('confirmed', 'waitlisted', 'cancelled', 'no_show');--> statement-breakpoint
 CREATE TYPE "public"."recurrence" AS ENUM('none', 'weekly');--> statement-breakpoint
 CREATE TYPE "public"."team" AS ENUM('A', 'B');--> statement-breakpoint
+CREATE TABLE "account" (
+	"account_id" text PRIMARY KEY NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"expires_at" timestamp,
+	"password" text
+);
+--> statement-breakpoint
 CREATE TABLE "group_members" (
-	"group_id" uuid NOT NULL,
-	"user_id" uuid NOT NULL,
+	"group_id" text NOT NULL,
+	"user_id" text NOT NULL,
 	"role" "group_role" DEFAULT 'player' NOT NULL,
 	"joined_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "group_members_group_id_user_id_pk" PRIMARY KEY("group_id","user_id")
 );
 --> statement-breakpoint
 CREATE TABLE "groups" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
-	"created_by" uuid NOT NULL,
+	"created_by" text NOT NULL,
 	"invite_code" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -24,9 +35,9 @@ CREATE TABLE "groups" (
 );
 --> statement-breakpoint
 CREATE TABLE "match_players" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"match_id" uuid NOT NULL,
-	"user_id" uuid,
+	"id" text PRIMARY KEY NOT NULL,
+	"match_id" text NOT NULL,
+	"user_id" text,
 	"status" "player_status" DEFAULT 'confirmed' NOT NULL,
 	"team" "team",
 	"guest_name" text,
@@ -38,9 +49,9 @@ CREATE TABLE "match_players" (
 );
 --> statement-breakpoint
 CREATE TABLE "matches" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"group_id" uuid,
-	"created_by" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"group_id" text,
+	"created_by" text NOT NULL,
 	"title" text,
 	"location" text NOT NULL,
 	"date" timestamp NOT NULL,
@@ -49,7 +60,7 @@ CREATE TABLE "matches" (
 	"status" "match_status" DEFAULT 'draft' NOT NULL,
 	"deadline" timestamp,
 	"recurrence" "recurrence" DEFAULT 'none' NOT NULL,
-	"parent_match_id" uuid,
+	"parent_match_id" text,
 	"match_summary" text,
 	"score_team_a" integer,
 	"score_team_b" integer,
@@ -60,7 +71,7 @@ CREATE TABLE "matches" (
 );
 --> statement-breakpoint
 CREATE TABLE "notification_preferences" (
-	"user_id" uuid PRIMARY KEY NOT NULL,
+	"user_id" text PRIMARY KEY NOT NULL,
 	"waitlist_promotion" boolean DEFAULT true NOT NULL,
 	"deadline_reminder" boolean DEFAULT true NOT NULL,
 	"post_match_rating" boolean DEFAULT true NOT NULL,
@@ -69,9 +80,9 @@ CREATE TABLE "notification_preferences" (
 );
 --> statement-breakpoint
 CREATE TABLE "player_stats" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
-	"group_id" uuid,
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"group_id" text,
 	"matches_played" integer DEFAULT 0 NOT NULL,
 	"matches_confirmed" integer DEFAULT 0 NOT NULL,
 	"matches_attended" integer DEFAULT 0 NOT NULL,
@@ -87,8 +98,8 @@ CREATE TABLE "player_stats" (
 );
 --> statement-breakpoint
 CREATE TABLE "ratings" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"match_id" uuid NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"match_id" text NOT NULL,
 	"rater_id" text NOT NULL,
 	"rated_id" text NOT NULL,
 	"technique" integer NOT NULL,
@@ -98,9 +109,20 @@ CREATE TABLE "ratings" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "session" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"token" text NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	CONSTRAINT "session_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
 CREATE TABLE "users" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"email" text,
+	"email_verified" boolean DEFAULT false NOT NULL,
 	"name" text NOT NULL,
 	"phone" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -108,6 +130,7 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "group_members" ADD CONSTRAINT "group_members_group_id_groups_id_fk" FOREIGN KEY ("group_id") REFERENCES "public"."groups"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "group_members" ADD CONSTRAINT "group_members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "groups" ADD CONSTRAINT "groups_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -119,5 +142,6 @@ ALTER TABLE "notification_preferences" ADD CONSTRAINT "notification_preferences_
 ALTER TABLE "player_stats" ADD CONSTRAINT "player_stats_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "player_stats" ADD CONSTRAINT "player_stats_group_id_groups_id_fk" FOREIGN KEY ("group_id") REFERENCES "public"."groups"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "ratings" ADD CONSTRAINT "ratings_match_id_matches_id_fk" FOREIGN KEY ("match_id") REFERENCES "public"."matches"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_user_group" ON "player_stats" USING btree ("user_id","group_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_rating" ON "ratings" USING btree ("match_id","rater_id","rated_id");

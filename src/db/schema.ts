@@ -1,7 +1,6 @@
 import {
   pgTable,
   pgEnum,
-  uuid,
   text,
   timestamp,
   boolean,
@@ -11,6 +10,7 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 // ============ ENUMS ============
 
@@ -34,15 +34,25 @@ export const teamEnum = pgEnum("team", ["A", "B"]);
 
 export const recurrenceEnum = pgEnum("recurrence", ["none", "weekly"]);
 
-// Per CONTEXT.md D-15: captain | manager | player (not organizer | player)
 export const groupRoleEnum = pgEnum("group_role", ["captain", "manager", "player"]);
 
-// ============ TABLES ============
+// ============ BETTER-AUTH TABLES ============
 
-// Better-auth session table
+// User table - better-auth requires text id, not uuid
+export const users = pgTable("users", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  email: text("email").unique(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  name: text("name").notNull(),
+  phone: text("phone"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Session table for better-auth
 export const sessions = pgTable("session", {
   id: text("id").primaryKey(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -51,8 +61,24 @@ export const sessions = pgTable("session", {
   userAgent: text("user_agent"),
 });
 
+// Account table for better-auth (stores OAuth and email/password data)
+export const accounts = pgTable("account", {
+  accountId: text("account_id").primaryKey(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  expiresAt: timestamp("expires_at"),
+  password: text("password"), // For email/password auth
+});
+
+// ============ APPLICATION TABLES ============
+
 export const notificationPreferences = pgTable("notification_preferences", {
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull()
     .primaryKey(),
@@ -63,21 +89,11 @@ export const notificationPreferences = pgTable("notification_preferences", {
   welcomeEmail: boolean("welcome_email").notNull().default(true),
 });
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: text("email").unique(),
-  emailVerified: boolean("email_verified").notNull().default(false),
-  name: text("name").notNull(),
-  phone: text("phone"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const groups = pgTable("groups", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
-  createdBy: uuid("created_by")
+  createdBy: text("created_by")
     .references(() => users.id)
     .notNull(),
   inviteCode: text("invite_code").unique().notNull(),
@@ -88,10 +104,10 @@ export const groups = pgTable("groups", {
 export const groupMembers = pgTable(
   "group_members",
   {
-    groupId: uuid("group_id")
+    groupId: text("group_id")
       .references(() => groups.id, { onDelete: "cascade" })
       .notNull(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     role: groupRoleEnum("role").notNull().default("player"),
@@ -103,9 +119,9 @@ export const groupMembers = pgTable(
 );
 
 export const matches = pgTable("matches", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  groupId: uuid("group_id").references(() => groups.id, { onDelete: "set null" }),
-  createdBy: uuid("created_by")
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  groupId: text("group_id").references(() => groups.id, { onDelete: "set null" }),
+  createdBy: text("created_by")
     .references(() => users.id)
     .notNull(),
   title: text("title"),
@@ -116,7 +132,7 @@ export const matches = pgTable("matches", {
   status: matchStatusEnum("status").notNull().default("draft"),
   deadline: timestamp("deadline"),
   recurrence: recurrenceEnum("recurrence").notNull().default("none"),
-  parentMatchId: uuid("parent_match_id"),
+  parentMatchId: text("parent_match_id"),
   matchSummary: text("match_summary"),
   scoreTeamA: integer("score_team_a"),
   scoreTeamB: integer("score_team_b"),
@@ -126,11 +142,11 @@ export const matches = pgTable("matches", {
 });
 
 export const matchPlayers = pgTable("match_players", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  matchId: uuid("match_id")
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  matchId: text("match_id")
     .references(() => matches.id, { onDelete: "cascade" })
     .notNull(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
   status: playerStatusEnum("status").notNull().default("confirmed"),
   team: teamEnum("team"),
   guestName: text("guest_name"),
@@ -143,15 +159,15 @@ export const matchPlayers = pgTable("match_players", {
 export const ratings = pgTable(
   "ratings",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    matchId: uuid("match_id")
+    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    matchId: text("match_id")
       .references(() => matches.id, { onDelete: "cascade" })
       .notNull(),
-    raterId: text("rater_id").notNull(), // user_id or guest_token
-    ratedId: text("rated_id").notNull(), // user_id or guest_token
-    technique: integer("technique").notNull(), // 1-5
-    physique: integer("physique").notNull(), // 1-5
-    collectif: integer("collectif").notNull(), // 1-5
+    raterId: text("rater_id").notNull(),
+    ratedId: text("rated_id").notNull(),
+    technique: integer("technique").notNull(),
+    physique: integer("physique").notNull(),
+    collectif: integer("collectif").notNull(),
     comment: text("comment"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -167,11 +183,11 @@ export const ratings = pgTable(
 export const playerStats = pgTable(
   "player_stats",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
+    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
-    groupId: uuid("group_id").references(() => groups.id, { onDelete: "cascade" }),
+    groupId: text("group_id").references(() => groups.id, { onDelete: "cascade" }),
     matchesPlayed: integer("matches_played").notNull().default(0),
     matchesConfirmed: integer("matches_confirmed").notNull().default(0),
     matchesAttended: integer("matches_attended").notNull().default(0),
@@ -210,18 +226,26 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   stats: many(playerStats),
   notificationPreferences: one(notificationPreferences),
   sessions: many(sessions),
-}));
-
-export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [notificationPreferences.userId],
-    references: [users.id],
-  }),
+  accounts: many(accounts),
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [notificationPreferences.userId],
     references: [users.id],
   }),
 }));
