@@ -116,6 +116,33 @@ export async function checkInviteCodeExists(code: string): Promise<boolean> {
   return (result?.count ?? 0) > 0;
 }
 
+/**
+ * Get group by invite code
+ * Used for validating invite codes during group joining
+ *
+ * @param code - The invite code (6 chars, URL-safe)
+ * @returns Group data or null if not found
+ */
+export async function getGroupByInviteCode(code: string): Promise<{
+  id: string;
+  name: string;
+  slug: string;
+  inviteCode: string;
+} | null> {
+  const [group] = await db
+    .select({
+      id: groups.id,
+      name: groups.name,
+      slug: groups.slug,
+      inviteCode: groups.inviteCode,
+    })
+    .from(groups)
+    .where(eq(groups.inviteCode, code))
+    .limit(1);
+
+  return group ?? null;
+}
+
 // ============ GROUP LEADERBOARD & MATCH HISTORY QUERIES ============
 
 export interface LeaderboardEntry {
