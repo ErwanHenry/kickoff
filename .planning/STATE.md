@@ -2,22 +2,22 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-status: discussing
-last_updated: "2026-03-30T22:00:00.000Z"
+current_phase: 04
+status: verifying
+last_updated: "2026-03-31T07:49:43.119Z"
 progress:
-  total_phases: 10
-  completed_phases: 3
-  total_plans: 13
-  completed_plans: 13
-  percent: 100
+  total_phases: 11
+  completed_phases: 5
+  total_plans: 20
+  completed_plans: 16
+  percent: 80
 ---
 
 # STATE: kickoff
 
 **Project:** Mobile PWA for organizing casual football matches
-**Current Phase:** 03
-**Last Updated:** 2026-03-30
+**Current Phase:** 04
+**Last Updated:** 2026-03-31
 
 ## Project Reference
 
@@ -26,29 +26,31 @@ progress:
 **What We're Building:**
 A Progressive Web App that lets organizers create football matches and share a WhatsApp link. Players RSVP with one tap (no account required). After the match, players rate teammates on 3 axes (technique, physique, collectif), which feeds into intelligent team balancing for future matches.
 
-**Current Focus:** Phase 05 — Post-Match Closure
+**Current Focus:** Phase 04 — Team Balancing
 
 ## Current Position
 
-Phase: 05 (post-match-closure) — DISCUSSING
-Plan: 0 of TBD
-**Status:** Context gathered, ready for planning
-**Progress:** [          ] 0%
+Phase: 04 (Team Balancing) — EXECUTING
+Plan: 1 of 1
+Plans: 4/4 executed
+**Status:** Phase complete — ready for verification
+**Progress:** [████████░░] 80%
 
 ## Performance Metrics
 
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
-| 01 | 01 | ~10 min | 3 | 20 |
-| 01 | 02 | ~8 min | 3 | 15 |
-| Phase 02 P01 | ~6 min | 5 tasks | 5 files |
-| Phase 02 P02 | ~7 min | 6 tasks | 8 files |
-| Phase 02 P03 | ~11 min | 5 tasks | 6 files |
-| Phase 03 P01 | 15 | 5 tasks | 7 files |
-| Phase 03-team-balancing P02 | 8min | 3 tasks | 3 files |
-| Phase 03-team-balancing P03 | 6min | 6 tasks | 5 files |
+| 01.1 | 01-01 | ~15 min | 5 | 5 |
+| 01.1 | 01-02a | ~10 min | 5 | 3 |
+| 01.1 | 01-02b | ~12 min | 5 | 8 |
+| 01.1 | 01-02c | ~8 min | 3 | 3 |
+| Phase 04 P01 | 7 | 5 tasks | 5 files |
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- **Phase 1.1 inserted after Phase 1:** Setup Design System — Fonts (DM Sans, Space Mono), couleurs (pitch, lime, chalk), icônes football, et tokens réutilisables. Fichiers préparés dans `addentum/`. (2026-03-31)
 
 ### Key Decisions Made
 
@@ -125,6 +127,11 @@ None — Phase 02 complete, ready for Phase 03 (Team Balancing).
 - **2026-03-30:** Plan 01-03 complete - Drizzle ORM + Neon serverless + complete schema (commit 3f4dcf9)
 - **2026-03-30:** Phase 02 complete - Match creation, guest RSVP, waitlist promotion, dashboard (10 plans, 695s total)
 - **2026-03-30:** Plan 02-03 complete - Waitlist promotion + dashboard (commits 2af8e0f, bb81f57, ada682d, 87ae889, 8754b63, 9300fc9)
+- **2026-03-31:** Phase 01.1 complete - Setup Design System (4 plans)
+  - 01.1-01-PLAN: Fonts (DM Sans, Space Mono), Tailwind theme extensions, FootballIcon component, design-tokens library
+  - 01.1-02a-PLAN: CSS variables mapped to kickoff colors (pitch, lime, chalk, etc.)
+  - 01.1-02b-PLAN: Lucide icons replaced with FootballIcon for domain concepts, font-mono applied to data labels
+  - 01.1-02c-PLAN: StatusBadges token integrated, shadow-card and rounded-card applied
 
 ---
 *This document is updated at phase transitions and after completing major milestones*

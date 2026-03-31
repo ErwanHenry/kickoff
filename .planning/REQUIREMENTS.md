@@ -45,8 +45,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Team Balancing
 
-- [ ] **BALANCE-01**: System generates balanced teams using brute-force algorithm
-- [ ] **BALANCE-02**: Algorithm uses player scores (technique 40%, physique 30%, collectif 30%)
+- [x] **BALANCE-01**: System generates balanced teams using brute-force algorithm
+- [x] **BALANCE-02**: Algorithm uses player scores (technique 40%, physique 30%, collectif 30%)
 - [x] **BALANCE-03**: New players without ratings default to 3.0 on all axes
 - [x] **BALANCE-04**: Organizer can view team assignments with scores per team
 - [x] **BALANCE-05**: Organizer can manually reassign players between teams
@@ -195,8 +195,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WAIT-02 | Phase 10 | Pending |
 | WAIT-03 | Phase 2 | Pending |
 | WAIT-04 | Phase 2 | Pending |
-| BALANCE-01 | Phase 4 | Pending |
-| BALANCE-02 | Phase 4 | Pending |
+| BALANCE-01 | Phase 4 | Complete |
+| BALANCE-02 | Phase 4 | Complete |
 | BALANCE-03 | Phase 4 | Complete |
 | BALANCE-04 | Phase 4 | Complete |
 | BALANCE-05 | Phase 4 | Complete |
