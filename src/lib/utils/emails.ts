@@ -258,3 +258,60 @@ kickoff — Organise tes matchs de foot
 
   console.log(`Sent deadline reminder email to ${userEmail}`);
 }
+
+/**
+ * Send post-match rating email when match status changes to 'played'
+ * Per CONTEXT.md D-11: Plain text, call to action for rating
+ * Per plan 10-02 Task 5: Post-match rating email template
+ *
+ * @param userId - The user ID to send email to
+ * @param userName - The user's first name
+ * @param userEmail - The user's email address (nullable)
+ * @param matchTitle - The match title (nullable)
+ * @param matchLocation - The match location
+ * @param shareToken - The match share token for rating link
+ */
+export async function sendPostMatchRatingEmail(
+  userId: string,
+  userName: string,
+  userEmail: string | null,
+  matchTitle: string | null,
+  matchLocation: string,
+  shareToken: string
+): Promise<void> {
+  if (!userEmail) {
+    console.log(`Skipping post-match rating: user ${userId} has no email`);
+    return;
+  }
+
+  const prefs = await getUserNotificationPreferences(userId);
+  if (!prefs.postMatchRating) {
+    console.log(`Skipping post-match rating: user ${userId} opted out`);
+    return;
+  }
+
+  const title = matchTitle || matchLocation;
+  const ratingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/m/${shareToken}/rate`;
+
+  const text = `
+Salut ${userName} !
+
+Comment s'est passé "${title}" ?
+
+Note tes coéquipiers :
+${ratingUrl}
+
+Bonne semaine !
+--
+kickoff — Organise tes matchs de foot
+  `.trim();
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM || 'noreply@kickoff.app',
+    to: userEmail,
+    subject: 'Comment s\'est passé le match ?',
+    text,
+  });
+
+  console.log(`Sent post-match rating email to ${userEmail}`);
+}
