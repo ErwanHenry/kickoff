@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
+current_phase: 6
 status: planning
-last_updated: "2026-03-31T07:56:28.194Z"
+last_updated: "2026-03-31T08:06:21.865Z"
 progress:
   total_phases: 11
   completed_phases: 5
@@ -16,7 +16,7 @@ progress:
 # STATE: kickoff
 
 **Project:** Mobile PWA for organizing casual football matches
-**Current Phase:** 05
+**Current Phase:** 6
 **Last Updated:** 2026-03-31
 
 ## Project Reference
@@ -26,11 +26,11 @@ progress:
 **What We're Building:**
 A Progressive Web App that lets organizers create football matches and share a WhatsApp link. Players RSVP with one tap (no account required). After the match, players rate teammates on 3 axes (technique, physique, collectif), which feeds into intelligent team balancing for future matches.
 
-**Current Focus:** Phase 04 — Team Balancing
+**Current Focus:** Phase 05 — Post-Match Closure
 
 ## Current Position
 
-Phase: 04 (Team Balancing) — EXECUTING
+Phase: 05 (Post-Match Closure) — EXECUTING
 Plan: Not started
 Plans: 4/4 executed
 **Status:** Ready to plan
