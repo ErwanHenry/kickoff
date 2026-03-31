@@ -95,3 +95,42 @@ export async function getConfirmedPlayersForAttendance(matchId: string) {
     )
     .orderBy(matchPlayers.team, matchPlayers.confirmedAt);
 }
+
+/**
+ * Get match data for OG image generation
+ * Returns match with confirmed player count for WhatsApp previews
+ * Per plan 10-01 Task 2: SHARE-01, SHARE-02
+ */
+export async function getMatchForOG(matchId: string) {
+  const [match] = await db
+    .select({
+      id: matches.id,
+      title: matches.title,
+      location: matches.location,
+      date: matches.date,
+      maxPlayers: matches.maxPlayers,
+      shareToken: matches.shareToken,
+    })
+    .from(matches)
+    .where(eq(matches.id, matchId))
+    .limit(1);
+
+  if (!match) return null;
+
+  // Count confirmed players using sql count for performance
+  const [playerCount] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(matchPlayers)
+    .where(
+      and(
+        eq(matchPlayers.matchId, matchId),
+        eq(matchPlayers.status, "confirmed")
+      )
+    )
+    .limit(1);
+
+  return {
+    ...match,
+    confirmedCount: playerCount?.count ?? 0,
+  };
+}
