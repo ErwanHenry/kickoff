@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Settings } from "lucide-react";
 import { FootballIcon } from "@/components/icons/football-icons";
+import { getUserGroups } from "@/lib/db/queries/groups";
+import type { UserGroup } from "@/lib/db/queries/groups";
+import { auth } from "@/lib/auth";
 
 /**
  * Match creation form component
@@ -22,20 +25,46 @@ import { FootballIcon } from "@/components/icons/football-icons";
 export function MatchForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [groups, setGroups] = useState<UserGroup[]>([]);
+  const [isLoadingGroups, setIsLoadingGroups] = useState(true);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<MatchCreateInput>({
     resolver: zodResolver(matchCreateSchema) as any,
     defaultValues: {
       maxPlayers: 14,
       minPlayers: 10,
       recurrence: "none" as const,
+      groupId: undefined,
     },
   });
+
+  // Fetch user's groups on component mount
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const session = await auth.api.getSession({
+          headers: new Headers(),
+        });
+
+        if (session?.user?.id) {
+          const userGroups = await getUserGroups(session.user.id);
+          setGroups(userGroups);
+        }
+      } catch (error) {
+        console.error("Failed to fetch groups:", error);
+      } finally {
+        setIsLoadingGroups(false);
+      }
+    };
+
+    fetchGroups();
+  }, []);
 
   const watchDate = watch("date");
 
@@ -248,18 +277,46 @@ export function MatchForm() {
             </select>
           </div>
 
-          {/* Group select - deferred for future implementation */}
+          {/* Group selection */}
           <div className="space-y-2">
-            <Label htmlFor="groupId">Groupe (optionnel)</Label>
-            <Input
-              id="groupId"
-              type="text"
-              placeholder="Non disponible pour le moment"
-              disabled
-              className="h-12 opacity-50"
-            />
+            <Label htmlFor="groupId" className="flex items-center gap-2">
+              <FootballIcon name="cornerFlag" size={16} />
+              Groupe (optionnel)
+            </Label>
+            {isLoadingGroups ? (
+              <div className="h-12 flex items-center text-sm text-muted-foreground">
+                Chargement des groupes...
+              </div>
+            ) : groups.length === 0 ? (
+              <div className="space-y-2">
+                <select
+                  id="groupId"
+                  {...register("groupId")}
+                  className="h-12 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled
+                >
+                  <option value="">Aucun groupe</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Crée un groupe d&apos;abord pour associer ce match
+                </p>
+              </div>
+            ) : (
+              <select
+                id="groupId"
+                {...register("groupId")}
+                className="h-12 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                <option value="">Aucun groupe</option>
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name} ({group.memberCount} membre{group.memberCount > 1 ? "s" : ""})
+                  </option>
+                ))}
+              </select>
+            )}
             <p className="text-xs text-muted-foreground">
-              L&apos;association de groupe sera disponible prochainement
+              Associe ce match à un groupe pour le classement
             </p>
           </div>
         </CardContent>
