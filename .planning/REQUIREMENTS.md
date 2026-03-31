@@ -81,7 +81,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PROFILE-05**: Profile displays last match date (relative: "il y a 3 jours")
 - [x] **PROFILE-06**: Profile displays match history (last 10 matches with results)
 - [x] **PROFILE-07**: Profile displays anonymous comments received
-- [ ] **PROFILE-08**: Guest sees CTA to create account after rating
+- [x] **PROFILE-08**: Guest sees CTA to create account after rating
 
 ### Groups
 
@@ -222,7 +222,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROFILE-05 | Phase 7 | Complete |
 | PROFILE-06 | Phase 7 | Complete |
 | PROFILE-07 | Phase 7 | Complete |
-| PROFILE-08 | Phase 7 | Pending |
+| PROFILE-08 | Phase 7 | Complete |
 | GROUP-01 | Phase 8 | Pending |
 | GROUP-02 | Phase 8 | Pending |
 | GROUP-03 | Phase 8 | Pending |
