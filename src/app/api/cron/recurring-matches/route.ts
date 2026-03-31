@@ -91,15 +91,11 @@ export async function POST(request: Request) {
 
     // Count succeeded and failed
     // Matches with emailError are still considered succeeded (match creation is primary concern)
-    const succeeded = results.filter(
-      (r): r is PromiseFulfilledResult<{ success: true; matchId: string; parentMatchId: string; emailError?: string }> =>
-        r.status === 'fulfilled' && r.value.success
-    ).length;
+    const succeeded = results.filter((r) => r.status === 'fulfilled' && r.value.success === true).length;
 
     // Count email errors separately
     const emailErrors = results.filter(
-      (r): r is PromiseFulfilledResult<{ success: true; matchId: string; parentMatchId: string; emailError?: string }> =>
-        r.status === 'fulfilled' && r.value.success && r.value.emailError
+      (r) => r.status === 'fulfilled' && r.value.success === true && 'emailError' in r.value && !!r.value.emailError
     ).length;
 
     const failed = results.length - succeeded;
