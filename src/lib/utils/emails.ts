@@ -202,3 +202,59 @@ kickoff — Organise tes matchs de foot
 
   console.log(`Sent waitlist promotion email to ${userEmail}`);
 }
+
+/**
+ * Send deadline reminder email 2h before match confirmation deadline
+ * Per CONTEXT.md D-11: Plain text, urgency, includes confirm link
+ * Per plan 10-02 Task 4: Deadline reminder email template
+ *
+ * @param userId - The user ID to send email to
+ * @param userName - The user's first name
+ * @param userEmail - The user's email address (nullable)
+ * @param matchTitle - The match title (nullable, falls back to date)
+ * @param matchDate - The match date
+ * @param shareToken - The match share token for link
+ */
+export async function sendDeadlineReminderEmail(
+  userId: string,
+  userName: string,
+  userEmail: string | null,
+  matchTitle: string | null,
+  matchDate: Date,
+  shareToken: string
+): Promise<void> {
+  if (!userEmail) {
+    console.log(`Skipping deadline reminder: user ${userId} has no email`);
+    return;
+  }
+
+  const prefs = await getUserNotificationPreferences(userId);
+  if (!prefs.deadlineReminder) {
+    console.log(`Skipping deadline reminder: user ${userId} opted out`);
+    return;
+  }
+
+  const title = matchTitle || `Match du ${format(matchDate, 'dd MMM', { locale: fr })}`;
+  const matchUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/m/${shareToken}`;
+
+  const text = `
+Salut ${userName} !
+
+Plus que 2h pour confirmer ta présence à "${title}".
+
+ ${matchUrl}
+
+À tout de suite !
+--
+kickoff — Organise tes matchs de foot
+  `.trim();
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM || 'noreply@kickoff.app',
+    to: userEmail,
+    subject: 'Plus que 2h pour confirmer',
+    text,
+  });
+
+  console.log(`Sent deadline reminder email to ${userEmail}`);
+}
