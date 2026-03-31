@@ -116,11 +116,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Notifications
 
-- [ ] **NOTIF-01**: Waitlisted player receives email when promoted to confirmed
-- [ ] **NOTIF-02**: Player receives reminder email 2h before confirmation deadline
-- [ ] **NOTIF-03**: Players receive email after match to rate teammates
+- [x] **NOTIF-01**: Waitlisted player receives email when promoted to confirmed
+- [x] **NOTIF-02**: Player receives reminder email 2h before confirmation deadline
+- [x] **NOTIF-03**: Players receive email after match to rate teammates
 - [ ] **NOTIF-04**: Group members receive email when new weekly match created
-- [ ] **NOTIF-05**: New user receives welcome email after account creation
+- [x] **NOTIF-05**: New user receives welcome email after account creation
 
 ## v2 Requirements
 
@@ -242,11 +242,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHARE-01 | Phase 10 | Complete |
 | SHARE-02 | Phase 10 | Complete |
 | SHARE-03 | Phase 2 | Pending |
-| NOTIF-01 | Phase 10 | Pending |
-| NOTIF-02 | Phase 10 | Pending |
-| NOTIF-03 | Phase 10 | Pending |
+| NOTIF-01 | Phase 10 | Complete |
+| NOTIF-02 | Phase 10 | Complete |
+| NOTIF-03 | Phase 10 | Complete |
 | NOTIF-04 | Phase 10 | Pending |
-| NOTIF-05 | Phase 10 | Pending |
+| NOTIF-05 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 73 total
