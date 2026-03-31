@@ -29,8 +29,8 @@
 | 3. Waitlist & Dashboard | 2/3 | In Progress|  |
 | 4. Team Balancing | 0/1 | Planning | - |
 | 5. Post-Match Closure | 1/1 | Planning | - |
-| 6. Ratings & Stats | 0/3 | Not started | - |
-| 7. Player Profiles | 0/2 | Not started | - |
+| 6. Ratings & Stats | 3/3 | Complete | 2026-03-31 |
+| 7. Player Profiles | 0/2 | Planning | - |
 | 8. Groups & Leaderboards | 0/3 | Not started | - |
 | 9. Recurrence & Automation | 0/2 | Not started | - |
 | 10. Polish & Production | 0/4 | Not started | - |
@@ -212,7 +212,13 @@
 7. Player stats recalculate incrementally after each rating
 8. Match status changes to "rated" when ≥50% of players rated
 
-**Plans:** TBD
+**Plans:** 3 plans in 3 waves (COMPLETE)
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 06-01-PLAN.md | Rating infrastructure (schema, queries, submitRatings Server Action) |
+| 2 | 06-02-PLAN.md | Rating UI (RatingForm, PlayerRatingCard, StarInput, rating pages) |
+| 3 | 06-03-PLAN.md | Stats recalculation (incremental updates, match status tracking, progress indicator) |
 
 **UI hint:** yes
 
@@ -236,7 +242,14 @@
 7. Profile displays anonymous comments received
 8. Guest sees CTA to create account after rating
 
-**Plans:** TBD
+**Plans:** 2 plans in 2 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 07-01-PLAN.md | Player profile page (queries, stats overview, radar chart, match history, comments) |
+| 2 | 07-02-PLAN.md | Profile navigation integration (guest CTA, profile links from player lists) |
+
+**Note:** Phase 7 depends on Phase 6 (Ratings & Stats) for player_stats data and rating queries. Recharts radar chart displays 3 axes (technique, physique, collectif).
 
 **UI hint:** yes
 
