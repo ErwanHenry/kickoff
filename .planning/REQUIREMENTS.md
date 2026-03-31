@@ -110,8 +110,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Sharing & Discovery
 
-- [ ] **SHARE-01**: Match link generates OG preview for WhatsApp
-- [ ] **SHARE-02**: OG image displays match info (title, date, location, confirmed count)
+- [x] **SHARE-01**: Match link generates OG preview for WhatsApp
+- [x] **SHARE-02**: OG image displays match info (title, date, location, confirmed count)
 - [ ] **SHARE-03**: Match page loads in <1s on 3G connection
 
 ### Notifications
@@ -239,8 +239,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PWA-02 | Phase 1 | Complete |
 | PWA-03 | Phase 1 | Complete |
 | PWA-04 | Phase 1 | Complete |
-| SHARE-01 | Phase 10 | Pending |
-| SHARE-02 | Phase 10 | Pending |
+| SHARE-01 | Phase 10 | Complete |
+| SHARE-02 | Phase 10 | Complete |
 | SHARE-03 | Phase 2 | Pending |
 | NOTIF-01 | Phase 10 | Pending |
 | NOTIF-02 | Phase 10 | Pending |
