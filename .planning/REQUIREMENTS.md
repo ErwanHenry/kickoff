@@ -74,13 +74,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Player Profiles
 
-- [ ] **PROFILE-01**: Profile displays matches played count
-- [ ] **PROFILE-02**: Profile displays attendance rate (with color badge: green ≥90%, yellow 70-89%, red <70%)
-- [ ] **PROFILE-03**: Profile displays overall rating (avg of 3 axes)
-- [ ] **PROFILE-04**: Profile displays radar chart of 3 rating axes
-- [ ] **PROFILE-05**: Profile displays last match date (relative: "il y a 3 jours")
-- [ ] **PROFILE-06**: Profile displays match history (last 10 matches with results)
-- [ ] **PROFILE-07**: Profile displays anonymous comments received
+- [x] **PROFILE-01**: Profile displays matches played count
+- [x] **PROFILE-02**: Profile displays attendance rate (with color badge: green ≥90%, yellow 70-89%, red <70%)
+- [x] **PROFILE-03**: Profile displays overall rating (avg of 3 axes)
+- [x] **PROFILE-04**: Profile displays radar chart of 3 rating axes
+- [x] **PROFILE-05**: Profile displays last match date (relative: "il y a 3 jours")
+- [x] **PROFILE-06**: Profile displays match history (last 10 matches with results)
+- [x] **PROFILE-07**: Profile displays anonymous comments received
 - [ ] **PROFILE-08**: Guest sees CTA to create account after rating
 
 ### Groups
@@ -215,13 +215,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RATE-06 | Phase 6 | Complete |
 | RATE-07 | Phase 6 | Complete |
 | RATE-08 | Phase 6 | Complete |
-| PROFILE-01 | Phase 7 | Pending |
-| PROFILE-02 | Phase 7 | Pending |
-| PROFILE-03 | Phase 7 | Pending |
-| PROFILE-04 | Phase 7 | Pending |
-| PROFILE-05 | Phase 7 | Pending |
-| PROFILE-06 | Phase 7 | Pending |
-| PROFILE-07 | Phase 7 | Pending |
+| PROFILE-01 | Phase 7 | Complete |
+| PROFILE-02 | Phase 7 | Complete |
+| PROFILE-03 | Phase 7 | Complete |
+| PROFILE-04 | Phase 7 | Complete |
+| PROFILE-05 | Phase 7 | Complete |
+| PROFILE-06 | Phase 7 | Complete |
+| PROFILE-07 | Phase 7 | Complete |
 | PROFILE-08 | Phase 7 | Pending |
 | GROUP-01 | Phase 8 | Pending |
 | GROUP-02 | Phase 8 | Pending |

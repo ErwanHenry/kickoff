@@ -30,7 +30,7 @@
 | 4. Team Balancing | 0/1 | Planning | - |
 | 5. Post-Match Closure | 1/1 | Planning | - |
 | 6. Ratings & Stats | 3/3 | Complete | 2026-03-31 |
-| 7. Player Profiles | 0/2 | Planning | - |
+| 7. Player Profiles | 1/2 | In Progress|  |
 | 8. Groups & Leaderboards | 0/3 | Not started | - |
 | 9. Recurrence & Automation | 0/2 | Not started | - |
 | 10. Polish & Production | 0/4 | Not started | - |
@@ -242,7 +242,7 @@
 7. Profile displays anonymous comments received
 8. Guest sees CTA to create account after rating
 
-**Plans:** 2 plans in 2 waves
+**Plans:** 1/2 plans executed
 
 | Wave | Plan | Objective |
 |------|------|-----------|
