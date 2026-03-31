@@ -303,7 +303,12 @@
 4. Players are NOT auto-confirmed (must RSVP each week)
 5. Organizer can set match recurrence (none / weekly)
 
-**Plans:** TBD
+**Plans:** 2 plans in 2 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 09-01-PLAN.md | Cron infrastructure + recurring match creation (Vercel Cron, CRON_SECRET, recurrence queries, Server Action, cron endpoint) |
+| 2 | 09-02-PLAN.md | Email notifications for recurring matches (branded HTML template, Resend integration, cron endpoint update) |
 
 **UI hint:** yes
 
@@ -327,7 +332,12 @@
 7. Guest can create account and merge all match history
 8. App is deployed to production with all features working
 
-**Plans:** TBD
+**Plans:** 2 plans in 2 waves
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 09-01-PLAN.md | Cron infrastructure + recurring match creation (Vercel Cron, CRON_SECRET, recurrence queries, Server Action, cron endpoint) |
+| 2 | 09-02-PLAN.md | Email notifications for recurring matches (branded HTML template, Resend integration, cron endpoint update) |
 
 **UI hint:** yes
 
