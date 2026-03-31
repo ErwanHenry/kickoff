@@ -1,6 +1,10 @@
 import { db } from "@/db";
 import { ratings, matchPlayers, users, playerStats, matches } from "@/db/schema";
 import { eq, and, sql, count, desc } from "drizzle-orm";
+import {
+  updatePlayerStatsFromRatings,
+  parseDecimal,
+} from "@/lib/stats";
 
 /**
  * Get a match by shareToken
@@ -240,4 +244,227 @@ export async function countDistinctRaters(matchId: string): Promise<number> {
     .where(eq(ratings.matchId, matchId));
 
   return result?.count || 0;
+}
+
+/**
+ * Get player stats by userId with optional groupId filter
+ * Returns single record or null
+ * Per PLAN 06-03 Task 2: fetch stats for rating updates
+ */
+export async function getPlayerStats(
+  userId: string,
+  groupId?: string
+): Promise<typeof playerStats.$inferSelect | null> {
+  const [stats] = await db
+    .select()
+    .from(playerStats)
+    .where(
+      and(
+        eq(playerStats.userId, userId),
+        groupId
+          ? eq(playerStats.groupId, groupId)
+          : sql`${playerStats.groupId} IS NULL`
+      )
+    )
+    .limit(1);
+
+  return stats || null;
+}
+
+/**
+ * Create or update player stats from a batch of new ratings
+ * Uses upsert pattern via Drizzle onConflictDoUpdate
+ * Per PLAN 06-03 Task 2: handle both create and update cases atomically
+ */
+export async function createOrUpdatePlayerStats(
+  userId: string,
+  groupId: string | null,
+  newRatings: Array<{ technique: number; physique: number; collectif: number }>
+): Promise<typeof playerStats.$inferSelect> {
+  // Check if stats record exists
+  const existingStats = await getPlayerStats(userId, groupId || undefined);
+
+  if (existingStats) {
+    // Update existing stats using incremental formula
+    const updatedStats = updatePlayerStatsFromRatings(newRatings, {
+      avgTechnique: existingStats.avgTechnique,
+      avgPhysique: existingStats.avgPhysique,
+      avgCollectif: existingStats.avgCollectif,
+      totalRatingsReceived: existingStats.totalRatingsReceived,
+    });
+
+    // Update database record
+    await db
+      .update(playerStats)
+      .set({
+        avgTechnique: updatedStats.avgTechnique,
+        avgPhysique: updatedStats.avgPhysique,
+        avgCollectif: updatedStats.avgCollectif,
+        avgOverall: updatedStats.avgOverall,
+        totalRatingsReceived: updatedStats.totalRatingsReceived,
+        lastUpdated: new Date(),
+      })
+      .where(
+        and(
+          eq(playerStats.userId, userId),
+          groupId
+            ? eq(playerStats.groupId, groupId)
+            : sql`${playerStats.groupId} IS NULL`
+        )
+      );
+
+    // Return updated record
+    const [updated] = await db
+      .select()
+      .from(playerStats)
+      .where(
+        and(
+          eq(playerStats.userId, userId),
+          groupId
+            ? eq(playerStats.groupId, groupId)
+            : sql`${playerStats.groupId} IS NULL`
+        )
+      )
+      .limit(1);
+
+    return updated!;
+  } else {
+    // Create new stats record from ratings
+    const avgTechnique =
+      newRatings.reduce((sum, r) => sum + r.technique, 0) / newRatings.length;
+    const avgPhysique =
+      newRatings.reduce((sum, r) => sum + r.physique, 0) / newRatings.length;
+    const avgCollectif =
+      newRatings.reduce((sum, r) => sum + r.collectif, 0) / newRatings.length;
+
+    const avgOverall =
+      avgTechnique * 0.4 + avgPhysique * 0.3 + avgCollectif * 0.3;
+
+    const inserted = await db
+      .insert(playerStats)
+      .values({
+        userId,
+        groupId,
+        avgTechnique: avgTechnique.toFixed(2),
+        avgPhysique: avgPhysique.toFixed(2),
+        avgCollectif: avgCollectif.toFixed(2),
+        avgOverall: avgOverall.toFixed(2),
+        totalRatingsReceived: newRatings.length,
+        lastUpdated: new Date(),
+      })
+      .returning();
+
+    // Insert always returns a record for non-conflicting insert
+    if (!inserted[0]) {
+      throw new Error("Failed to insert player stats");
+    }
+    return inserted[0];
+  }
+}
+
+/**
+ * Update match status to "rated" when 50%+ of confirmed players have rated
+ * Per PLAN 06-03 Task 2: check 50% threshold and update status
+ * @param matchId - Match ID to check and update
+ * @param tx - Database transaction instance (for consistency)
+ * @returns true if status updated to "rated", false otherwise
+ */
+export async function updateMatchRatedStatus(
+  matchId: string,
+  tx: typeof db = db
+): Promise<boolean> {
+  // Count distinct raters
+  const [ratersResult] = await tx
+    .select({ count: count() })
+    .from(ratings)
+    .where(eq(ratings.matchId, matchId));
+
+  const ratersCount = ratersResult?.count || 0;
+
+  // Count confirmed players who attended
+  const [confirmedResult] = await tx
+    .select({ count: count() })
+    .from(matchPlayers)
+    .where(
+      and(
+        eq(matchPlayers.matchId, matchId),
+        eq(matchPlayers.status, "confirmed"),
+        eq(matchPlayers.attended, true)
+      )
+    );
+
+  const confirmedCount = confirmedResult?.count || 0;
+
+  // Check if 50% threshold reached
+  if (confirmedCount > 0 && ratersCount / confirmedCount >= 0.5) {
+    // Update match status to "rated"
+    await tx
+      .update(matches)
+      .set({ status: "rated", updatedAt: new Date() })
+      .where(eq(matches.id, matchId));
+
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Get match raters count
+ * Per PLAN 06-03 Task 2: count distinct rater_ids for progress indicator
+ */
+export async function getMatchRatersCount(matchId: string): Promise<number> {
+  return countDistinctRaters(matchId);
+}
+
+/**
+ * Get match confirmed players count (attended=true)
+ * Per PLAN 06-03 Task 2: count for 50% threshold calculation
+ */
+export async function getMatchConfirmedCount(matchId: string): Promise<number> {
+  const [result] = await db
+    .select({ count: count() })
+    .from(matchPlayers)
+    .where(
+      and(
+        eq(matchPlayers.matchId, matchId),
+        eq(matchPlayers.status, "confirmed"),
+        eq(matchPlayers.attended, true)
+      )
+    );
+
+  return result?.count || 0;
+}
+
+/**
+ * Get match rating progress for UI display
+ * Per PLAN 06-03 Task 4: combines raters and confirmed counts with status check
+ */
+export async function getMatchRatingProgress(
+  matchId: string
+): Promise<{
+  raters: number;
+  confirmed: number;
+  percentage: number;
+  isRated: boolean;
+}> {
+  // Get match status
+  const [match] = await db
+    .select({ status: matches.status })
+    .from(matches)
+    .where(eq(matches.id, matchId))
+    .limit(1);
+
+  const isRated = match?.status === "rated";
+
+  const raters = await getMatchRatersCount(matchId);
+  const confirmed = await getMatchConfirmedCount(matchId);
+  const percentage = confirmed > 0 ? (raters / confirmed) * 100 : 0;
+
+  return {
+    raters,
+    confirmed,
+    percentage,
+    isRated,
+  };
 }
