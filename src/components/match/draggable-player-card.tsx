@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/components/ui/card';
+import { FootballIcon } from '@/components/icons/football-icons';
 import { cn } from '@/lib/utils';
 import type { Player } from '@/lib/team-balancer';
 
@@ -42,6 +43,11 @@ export function DraggablePlayerCard({ player, team, isDragging }: DraggablePlaye
     .toUpperCase()
     .slice(0, 2);
 
+  // Team colors from design system
+  const teamColors = team === 'A'
+    ? { bg: 'bg-team-a', text: 'text-team-a', border: 'border-l-team-a' }
+    : { bg: 'bg-team-b', text: 'text-team-b', border: 'border-l-team-b' };
+
   return (
     <div
       ref={setNodeRef}
@@ -56,46 +62,39 @@ export function DraggablePlayerCard({ player, team, isDragging }: DraggablePlaye
       <Card
         className={cn(
           'p-3 cursor-grab active:cursor-grabbing',
-          'hover:shadow-md transition-shadow',
-          'border-l-4',
-          team === 'A' ? 'border-l-blue-500' : 'border-l-red-500'
+          'hover:shadow-card-hover transition-shadow',
+          'border-l-4 rounded-card',
+          teamColors.border
         )}
       >
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className={cn(
             'w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold',
-            team === 'A' ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'
+            teamColors.bg,
+            teamColors.text
           )}>
             {initials}
           </div>
 
           {/* Player info */}
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-900 truncate">
+            <p className="font-medium text-slate-900 truncate">
               {player.name}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500 font-mono">
               Score: {playerScore}
-              {player.totalRatings === 0 && ' • Nouveau'}
+              {player.totalRatings === 0 && (
+                <span className="ml-2 text-lime-dark bg-lime-glow px-1.5 py-0.5 rounded-badge text-xs">
+                  Nouveau
+                </span>
+              )}
             </p>
           </div>
 
           {/* Drag handle indicator */}
-          <div className="text-gray-400">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 8h16M4 16h16"
-              />
-            </svg>
+          <div className="text-slate-400">
+            <FootballIcon name="jersey" size={16} />
           </div>
         </div>
       </Card>
