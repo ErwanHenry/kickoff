@@ -3,8 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 8
-status: planning
-last_updated: "2026-03-31T09:29:35.768Z"
+current_plan: 1
+status: executing
+last_updated: "2026-03-31T16:19:00.000Z"
 progress:
   total_phases: 11
   completed_phases: 7
@@ -26,14 +27,14 @@ progress:
 **What We're Building:**
 A Progressive Web App that lets organizers create football matches and share a WhatsApp link. Players RSVP with one tap (no account required). After the match, players rate teammates on 3 axes (technique, physique, collectif), which feeds into intelligent team balancing for future matches.
 
-**Current Focus:** Phase 07 — Player Profiles
+**Current Focus:** Phase 08 — Groups & Leaderboards
 
 ## Current Position
 
-Phase: 07 (Player Profiles) — EXECUTING
-Plan: Not started
-Plans: 4/4 executed
-**Status:** Ready to plan
+Phase: 08 (Groups & Leaderboards) — EXECUTING
+Plan: 08-01 (Group Creation Flow) — COMPLETE
+Plans: 1/3 executing
+**Status:** In progress
 **Progress:** [████████░░] 84%
 
 ## Performance Metrics
@@ -50,6 +51,7 @@ Plans: 4/4 executed
 | Phase 06 P03 | 0 | 4 tasks | 5 files |
 | Phase 07-player-profiles P01 | ~20 min | 6 tasks | 6 files |
 | Phase 07 P02 | 1255 | 3 tasks | 10 files |
+| Phase 08 P01 | ~25 min | 4 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -73,6 +75,8 @@ Plans: 4/4 executed
 | FIFO waitlist via confirmedAt | First come, first served ordering is fair and intuitive | Implemented ✅ |
 | Server Actions in lib/actions/ | Next.js 16 requires Actions outside app/api/ directory | Implemented ✅ |
 | Mobile dashboard with bottom nav | Touch-friendly navigation for mobile users | Implemented ✅ |
+| Numeric slug suffixes over nanoid | More user-friendly: "foot-du-mardi-2" vs "foot-du-mardi-xY9k" | Implemented ✅ |
+| Function props cannot pass Server→Client | Client components must handle own navigation after actions | Implemented ✅ |
 
 ### Technical Stack Confirmed
 

@@ -274,9 +274,17 @@
 8. Group can have multiple organizers
 9. Match can be associated with a group
 
-**Plans:** TBD
+**Plans:** 1/3 plans executed
 
-**UI hint:** yes
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 08-01-PLAN.md | Group creation flow (queries, Server Actions, form UI) ✅ |
+| 2 | 08-02-PLAN.md | Group detail page with leaderboard |
+| 3 | 08-03-PLAN.md | Group joining via invite code |
+
+**UI-SPEC:** `.planning/phases/08-groups-leaderboards/08-UI-SPEC.md` (Verified ✅)
+
+**UI hint:** yes (complete)
 
 ---
 
