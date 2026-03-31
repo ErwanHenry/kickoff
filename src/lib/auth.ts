@@ -13,7 +13,7 @@ export const auth = betterAuth({
     provider: "pg",
     schema: {
       user: schema.users,
-      // better-auth will create its own session/account tables
+      session: schema.sessions,
     },
   }),
   emailAndPassword: {

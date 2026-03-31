@@ -39,6 +39,18 @@ export const groupRoleEnum = pgEnum("group_role", ["captain", "manager", "player
 
 // ============ TABLES ============
 
+// Better-auth session table
+export const sessions = pgTable("session", {
+  id: text("id").primaryKey(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").unique().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+});
+
 export const notificationPreferences = pgTable("notification_preferences", {
   userId: uuid("user_id")
     .references(() => users.id, { onDelete: "cascade" })
@@ -54,6 +66,7 @@ export const notificationPreferences = pgTable("notification_preferences", {
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").unique(),
+  emailVerified: boolean("email_verified").notNull().default(false),
   name: text("name").notNull(),
   phone: text("phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -196,11 +209,19 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   matchParticipations: many(matchPlayers),
   stats: many(playerStats),
   notificationPreferences: one(notificationPreferences),
+  sessions: many(sessions),
 }));
 
 export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
   user: one(users, {
     fields: [notificationPreferences.userId],
+    references: [users.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
     references: [users.id],
   }),
 }));
