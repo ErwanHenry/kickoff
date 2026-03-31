@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -24,12 +24,12 @@ export function JoinGroupForm({ onSuccess }: JoinGroupFormProps) {
   const [inviteCode, setInviteCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useState<HTMLInputElement | null>(null)[0];
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input on mount
   useEffect(() => {
-    inputRef?.focus();
-  }, [inputRef]);
+    inputRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ export function JoinGroupForm({ onSuccess }: JoinGroupFormProps) {
             Code d'invitation
           </Label>
           <Input
-            ref={inputRef as React.RefObject<HTMLInputElement>}
+            ref={inputRef}
             id="inviteCode"
             name="inviteCode"
             type="text"
