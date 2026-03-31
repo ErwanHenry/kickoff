@@ -36,11 +36,18 @@ interface RatingFormProps {
     matchId?: string;
     ratingsCount?: number;
   }>;
+  ratingProgress?: {
+    raters: number;
+    confirmed: number;
+    percentage: number;
+    isRated: boolean;
+  };
 }
 
 /**
  * Rating Form component (shared between guest and user flows)
  * Per PLAN 06-02 requirements: mobile-first, progress indicator, post-submit flows
+ * Per PLAN 06-03 Task 4: display rating progress (X/Y players rated, progress bar)
  * Composes PlayerRatingCard for each teammate
  */
 export function RatingForm({
@@ -50,6 +57,7 @@ export function RatingForm({
   existingRatings,
   isGuest,
   submitRatings,
+  ratingProgress,
 }: RatingFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -239,7 +247,7 @@ export function RatingForm({
           Match du {/* Date could be passed as prop */}
         </p>
 
-        {/* Progress indicator badge */}
+        {/* Progress indicator badge (your ratings) */}
         <Badge
           className={cn(
             "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-badge font-mono text-xs",
@@ -259,6 +267,36 @@ export function RatingForm({
           />
           {ratedCount}/{players.length} joueurs notés
         </Badge>
+
+        {/* Per PLAN 06-03 Task 4: Rating participation progress indicator */}
+        {ratingProgress && (
+          <div className="space-y-1.5">
+            {/* Progress bar */}
+            <div className="relative h-1.5 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className={cn(
+                  "absolute top-0 left-0 h-full transition-all duration-300",
+                  ratingProgress.percentage >= 50
+                    ? "bg-pitch"
+                    : "bg-lime-glow"
+                )}
+                style={{ width: `${Math.min(ratingProgress.percentage, 100)}%` }}
+              />
+            </div>
+
+            {/* Progress text with badge */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-mono">
+                {ratingProgress.raters}/{ratingProgress.confirmed} joueurs ont noté
+              </span>
+              {ratingProgress.isRated && (
+                <Badge className="px-2 py-0.5 rounded-badge font-mono text-xs bg-lime-glow text-lime-dark">
+                  Complété
+                </Badge>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Players list */}

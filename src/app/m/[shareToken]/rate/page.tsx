@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
 import { getMatchByShareToken } from "@/lib/db/queries/ratings";
-import { getMatchPlayersForRating, getExistingRatings } from "@/lib/db/queries/ratings";
+import { getMatchPlayersForRating, getExistingRatings, getMatchRatingProgress } from "@/lib/db/queries/ratings";
 import { RatingForm } from "@/components/rating/rating-form";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -188,6 +188,10 @@ export default async function GuestRatingPage({ params }: PageProps) {
   // Fetch existing ratings
   const existingRatings = await getExistingRatings(match.id, guestToken);
 
+  // Fetch rating progress for UI display
+  // Per PLAN 06-03 Task 4: getMatchRatingProgress combines raters and confirmed counts
+  const ratingProgress = await getMatchRatingProgress(match.id);
+
   return (
     <main className="min-h-screen bg-chalk pb-safe">
       <div className="max-w-2xl mx-auto px-4 py-8 pb-24">
@@ -213,6 +217,7 @@ export default async function GuestRatingPage({ params }: PageProps) {
           existingRatings={existingRatings}
           isGuest={true}
           submitRatings={submitRatings}
+          ratingProgress={ratingProgress}
         />
       </div>
     </main>
