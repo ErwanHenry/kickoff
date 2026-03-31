@@ -2,22 +2,22 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 8
-current_plan: 3
+current_phase: 9
+current_plan: 2
 status: executing
-last_updated: "2026-03-31T15:16:00.000Z"
+last_updated: "2026-03-31T19:10:00.000Z"
 progress:
   total_phases: 11
-  completed_phases: 7
-  total_plans: 25
-  completed_plans: 22
-  percent: 88
+  completed_phases: 8
+  total_plans: 28
+  completed_plans: 23
+  percent: 82
 ---
 
 # STATE: kickoff
 
 **Project:** Mobile PWA for organizing casual football matches
-**Current Phase:** 8
+**Current Phase:** 9
 **Last Updated:** 2026-03-31
 
 ## Project Reference
@@ -27,15 +27,15 @@ progress:
 **What We're Building:**
 A Progressive Web App that lets organizers create football matches and share a WhatsApp link. Players RSVP with one tap (no account required). After the match, players rate teammates on 3 axes (technique, physique, collectif), which feeds into intelligent team balancing for future matches.
 
-**Current Focus:** Phase 08 — Groups & Leaderboards
+**Current Focus:** Phase 09 — Recurrence & Automation
 
 ## Current Position
 
-Phase: 08 (Groups & Leaderboards) — EXECUTING
-Plan: 08-03 (Group Joining & Dashboard) — COMPLETE
-Plans: 3/3 executing
+Phase: 09 (Recurrence & Automation) — EXECUTING
+Plan: 09-01 (Vercel Cron Infrastructure) — COMPLETE
+Plans: 1/3 executing
 **Status:** In progress
-**Progress:** [████████░░] 88%
+**Progress:** [████████░░] 82%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Plans: 3/3 executing
 | Phase 08 P01 | ~25 min | 4 tasks | 5 files |
 | Phase 08 P02 | ~30 min | 5 tasks | 6 files |
 | Phase 08 P03 | ~26 min | 6 tasks | 7 files |
+| Phase 09 P01 | ~5 min | 5 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Plans: 3/3 executing
 | Mobile dashboard with bottom nav | Touch-friendly navigation for mobile users | Implemented ✅ |
 | Numeric slug suffixes over nanoid | More user-friendly: "foot-du-mardi-2" vs "foot-du-mardi-xY9k" | Implemented ✅ |
 | Function props cannot pass Server→Client | Client components must handle own navigation after actions | Implemented ✅ |
+| Vercel Cron for recurrence | Serverless cron jobs eliminate need for external services | Implemented ✅ |
+| Weekly recurrence via parent/child | Parent match recurs, children are one-time occurrences | Implemented ✅ |
+| No auto-confirm for recurring matches | Players must RSVP weekly to measure reliability | Implemented ✅ |
 
 ### Technical Stack Confirmed
 
@@ -88,6 +92,7 @@ Plans: 3/3 executing
 - **UI:** Tailwind CSS v4 + shadcn/ui (accessible components)
 - **Email:** Resend (3K free tier/month)
 - **Hosting:** Vercel (Edge rendering, Cron jobs)
+- **Date Utilities:** date-fns (addWeeks for recurrence)
 
 ### Architecture Patterns Established
 
@@ -95,6 +100,8 @@ Plans: 3/3 executing
 - **Client Components** for interactive elements (RSVP buttons, forms)
 - **API Routes** with Drizzle transactions for race condition prevention
 - **Service Worker** cache-first for app shell, network-first for API calls
+- **Cron Endpoints** protected by CRON_SECRET header validation
+- **Recurring Matches** parent/child relationship with inherited settings
 
 ### Known Risks & Mitigations
 
@@ -105,26 +112,28 @@ Plans: 3/3 executing
 | Low rating participation (<30%) | Mobile-first stars, email triggers, progress indicator | Active in Phase 6 |
 | Guest → user merge data loss | Test merge with 3+ matches, verify stats preserved | Active in Phase 10 |
 | Slow mobile load from WhatsApp | SSR, Edge rendering, lazy load heavy components | Active in Phase 2 |
+| Duplicate recurring matches | Query checks for existing child before creation | Resolved ✅ |
+| Cron endpoint security | CRON_SECRET header validation with logging | Resolved ✅ |
 
 ### Current Blockers
 
-None — Phase 08 Plan 03 complete, ready for next phase.
+None — Phase 09 Plan 01 complete, ready for Plan 02 (email notifications).
 
 ## Session Continuity
 
-**Last Action:** Completed Plan 08-03 (Group Joining & Dashboard Integration)
+**Last Action:** Completed Plan 09-01 (Vercel Cron Infrastructure)
 
-**Next Action:** Execute next plan in Phase 08 or move to Phase 09
+**Next Action:** Execute Plan 09-02 (Email Notifications for Recurring Matches)
 
 **Context for Next Session:**
 
-- Phase 08 Plan 03 delivers: Group joining via invite codes, match-group association, groups dashboard, mobile nav with Groups tab
-- joinGroup Server Action handles invite validation, membership creation with 'player' role, player_stats initialization
-- Match creation form now includes group selection dropdown
-- Groups dashboard at /dashboard/groups shows user's groups separated by role
-- Mobile navigation component added with Groups link
+- Phase 09 Plan 01 delivers: Vercel Cron configuration, recurrence queries, Server Action for child match creation, cron endpoint with security
+- getParentMatchesNeedingNextOccurrence query filters for weekly parents without existing children
+- createRecurringMatchOccurrence Server Action creates matches with inherited settings, open status, no players auto-confirmed
+- Cron endpoint at /api/cron/recurring-matches validates CRON_SECRET, returns 401/500 on errors
+- All 18 tests pass, TypeScript compilation passes
 - Server Actions in lib/actions/, queries in lib/db/queries/
-- Mobile-first UI with max-w-2xl container pattern
+- Cron jobs run daily at midnight UTC per vercel.json
 
 **Outstanding Questions:**
 
@@ -144,14 +153,17 @@ None — Phase 08 Plan 03 complete, ready for next phase.
   - 01.1-02a-PLAN: CSS variables mapped to kickoff colors (pitch, lime, chalk, etc.)
   - 01.1-02b-PLAN: Lucide icons replaced with FootballIcon for domain concepts, font-mono applied to data labels
   - 01.1-02c-PLAN: StatusBadges token integrated, shadow-card and rounded-card applied
-- **2026-03-31:** Phase 08 Plan 03 complete - Group Joining & Dashboard Integration (7 commits)
-  - Added joinGroup Server Action with invite validation, player role, stats initialization
-  - Added getGroupByInviteCode query for code validation
-  - Created join-group-form component with 6-char uppercase input
-  - Created group-card component with role badges and hover effects
-  - Created groups dashboard at /dashboard/groups with create/join actions
-  - Created mobile-nav component with Groups tab
-  - Updated match form to include group selection dropdown
+- **2026-03-31:** Phase 08 complete - Groups & Leaderboards (3 plans)
+  - 08-01: Group creation with invite codes, numeric slug suffixes
+  - 08-02: Group pages with leaderboard, match history, member list
+  - 08-03: Group joining via invite codes, match-group association, groups dashboard
+- **2026-03-31:** Phase 09 Plan 01 complete - Vercel Cron Infrastructure (commit b2a0fcc)
+  - Added Vercel Cron configuration to vercel.json (daily at midnight UTC)
+  - Added CRON_SECRET to .env.example for cron endpoint security
+  - Created getParentMatchesNeedingNextOccurrence query to find parent matches
+  - Created createRecurringMatchOccurrence Server Action for child match creation
+  - Created /api/cron/recurring-matches endpoint with CRON_SECRET validation
+  - All 18 test stubs pass, TypeScript compilation passes
 
 ---
 *This document is updated at phase transitions and after completing major milestones*
