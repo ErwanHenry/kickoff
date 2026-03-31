@@ -30,7 +30,8 @@ async function getMatchData(shareToken: string) {
 }
 
 /**
- * Generate OG metadata for WhatsApp preview (SHARE-03)
+ * Generate OG metadata for WhatsApp preview
+ * Per plan 10-01 Task 4: SHARE-01, SHARE-02
  * Server-rendered for fast initial load and SEO
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -50,18 +51,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = match.title || `Match du ${format(match.date, "dd MMM", { locale: fr })}`;
   const description = `⚽ ${confirmedCount}/${match.maxPlayers} joueurs • 📍 ${match.location} • 📅 ${format(match.date, "EEE d MMM HH'h'mm", { locale: fr })}`;
 
+  // Dynamic OG image URL per plan 10-01 Task 4
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const imageUrl = `${baseUrl}/api/og?matchId=${match.id}`;
+
   return {
     title: `${title} — kickoff`,
     description,
     openGraph: {
       title,
       description,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      url: `${baseUrl}/m/${match.shareToken}`,
+      siteName: "kickoff",
+      locale: "fr_FR",
       type: "website",
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
+      images: [imageUrl],
     },
   };
 }
