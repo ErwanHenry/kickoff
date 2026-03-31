@@ -70,7 +70,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **RATE-05**: User can rate matches they participated in (via session)
 - [x] **RATE-06**: Player cannot rate same teammate more than once per match
 - [x] **RATE-07**: Player stats recalculate incrementally after each rating
-- [ ] **RATE-08**: Match status changes to "rated" when ≥50% of players rated
+- [x] **RATE-08**: Match status changes to "rated" when ≥50% of players rated
 
 ### Player Profiles
 
@@ -214,7 +214,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RATE-05 | Phase 6 | Complete |
 | RATE-06 | Phase 6 | Complete |
 | RATE-07 | Phase 6 | Complete |
-| RATE-08 | Phase 6 | Pending |
+| RATE-08 | Phase 6 | Complete |
 | PROFILE-01 | Phase 7 | Pending |
 | PROFILE-02 | Phase 7 | Pending |
 | PROFILE-03 | Phase 7 | Pending |
