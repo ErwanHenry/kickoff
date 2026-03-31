@@ -366,15 +366,17 @@ export async function createOrUpdatePlayerStats(
  * Update match status to "rated" when 50%+ of confirmed players have rated
  * Per PLAN 06-03 Task 2: check 50% threshold and update status
  * @param matchId - Match ID to check and update
- * @param tx - Database transaction instance (for consistency)
+ * @param tx - Optional transaction instance for consistency
  * @returns true if status updated to "rated", false otherwise
  */
 export async function updateMatchRatedStatus(
   matchId: string,
-  tx: typeof db = db
+  tx?: any
 ): Promise<boolean> {
+  const connection = tx || db;
+
   // Count distinct raters
-  const [ratersResult] = await tx
+  const [ratersResult] = await connection
     .select({ count: count() })
     .from(ratings)
     .where(eq(ratings.matchId, matchId));
@@ -382,7 +384,7 @@ export async function updateMatchRatedStatus(
   const ratersCount = ratersResult?.count || 0;
 
   // Count confirmed players who attended
-  const [confirmedResult] = await tx
+  const [confirmedResult] = await connection
     .select({ count: count() })
     .from(matchPlayers)
     .where(
@@ -398,7 +400,7 @@ export async function updateMatchRatedStatus(
   // Check if 50% threshold reached
   if (confirmedCount > 0 && ratersCount / confirmedCount >= 0.5) {
     // Update match status to "rated"
-    await tx
+    await connection
       .update(matches)
       .set({ status: "rated", updatedAt: new Date() })
       .where(eq(matches.id, matchId));

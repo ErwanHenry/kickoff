@@ -9,8 +9,8 @@ import {
   getMatchPlayersForRating,
   getExistingRatings,
   insertRatings,
-  updatePlayerStats,
-  countDistinctRaters,
+  createOrUpdatePlayerStats,
+  updateMatchRatedStatus,
 } from "@/lib/db/queries/ratings";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
@@ -103,62 +103,69 @@ export async function submitRatings(formData: FormData) {
       return { error: "Tu as déjà noté tous ces joueurs" };
     }
 
+    // Group ratings by ratedId before transaction
+    // Per PLAN 06-03 Task 3: ratingsByPlayer groups all ratings for each player
+    const ratingsByPlayer = new Map<string, Array<typeof newRatings[0]>>();
+
+    for (const rating of newRatings) {
+      if (!ratingsByPlayer.has(rating.ratedId)) {
+        ratingsByPlayer.set(rating.ratedId, []);
+      }
+      ratingsByPlayer.get(rating.ratedId)!.push(rating);
+    }
+
     // Insert ratings and update stats in transaction
+    // Per PLAN 06-03 Task 3: call createOrUpdatePlayerStats, updateMatchRatedStatus
+    let matchStatusUpdated = false;
+
     await db.transaction(async (tx) => {
       // Insert new ratings
       await insertRatings(input.matchId, raterId, newRatings);
 
       // Update stats for each rated player
-      const ratingsByPlayer = new Map<string, Array<typeof newRatings[0]>>();
+      // Per PLAN 06-03 Task 3: call createOrUpdatePlayerStats for each player
+      for (const [ratedId, playerRatings] of ratingsByPlayer) {
+        try {
+          // Determine groupId from match
+          const groupId = match.groupId || null;
 
-      for (const rating of newRatings) {
-        if (!ratingsByPlayer.has(rating.ratedId)) {
-          ratingsByPlayer.set(rating.ratedId, []);
+          // Call createOrUpdatePlayerStats (handles both create and update)
+          await createOrUpdatePlayerStats(ratedId, groupId, playerRatings);
+
+          console.log(`Updated stats for ${ratedId} (${playerRatings.length} ratings)`);
+        } catch (error) {
+          // Log but don't fail transaction (ratings are primary)
+          console.error(`Failed to update stats for ${ratedId}:`, error);
         }
-        ratingsByPlayer.get(rating.ratedId)!.push(rating);
       }
 
-      for (const [ratedId, playerRatings] of ratingsByPlayer) {
-        await updatePlayerStats(ratedId, input.matchId, playerRatings);
+      // Update match status to "rated" if threshold reached
+      // Per PLAN 06-03 Task 3: call updateMatchRatedStatus after stats updated
+      matchStatusUpdated = await updateMatchRatedStatus(input.matchId, tx);
+
+      if (matchStatusUpdated) {
+        console.log(`Match ${input.matchId} status updated to 'rated'`);
       }
     });
 
-    // Check if match should be marked "rated" (50% threshold)
-    const [confirmedCountResult] = await db
-      .select({ count: count() })
-      .from(matchPlayers)
-      .where(
-        and(
-          eq(matchPlayers.matchId, input.matchId),
-          eq(matchPlayers.attended, true)
-        )
-      );
-
-    const confirmedCount = confirmedCountResult?.count || 0;
-    const ratersCount = await countDistinctRaters(input.matchId);
-    const threshold = Math.ceil(confirmedCount / 2);
-
-    if (ratersCount >= threshold && match.status !== "rated") {
-      // Update match status to "rated"
-      await db
-        .update(matches)
-        .set({ status: "rated", updatedAt: new Date() })
-        .where(eq(matches.id, input.matchId));
-    }
-
     // Revalidate paths
+    // Per PLAN 06-03 Task 3: add /player/{ratedId} for each rated player (future-proofing)
     revalidatePath(`/match/${input.matchId}`);
     revalidatePath(`/match/${input.matchId}/rate`);
     if (match.shareToken) {
       revalidatePath(`/m/${match.shareToken}/rate`);
     }
 
+    // Revalidate player profile paths for future Phase 7
+    for (const ratedId of ratingsByPlayer.keys()) {
+      revalidatePath(`/player/${ratedId}`);
+    }
+
     return {
       success: true,
       matchId: input.matchId,
       ratingsCount: newRatings.length,
-      totalRaters: ratersCount,
-      matchRated: ratersCount >= threshold,
+      matchStatusUpdated, // Per PLAN 06-03 Task 3: indicates if match changed to "rated"
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
