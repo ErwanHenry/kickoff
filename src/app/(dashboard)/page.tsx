@@ -7,6 +7,7 @@ import { eq, and, sql, desc, or } from "drizzle-orm";
 import { MatchCard } from "@/components/match/match-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -169,31 +170,8 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      {/* Mobile navigation placeholder (Phase 3) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t md:hidden">
-        <div className="flex items-center justify-around py-2">
-          <Link href="/dashboard" className="flex flex-col items-center gap-1 flex-1">
-            <Button variant="ghost" size="sm" className="w-full">
-              <span className="text-xs">Accueil</span>
-            </Button>
-          </Link>
-          <Link href="/dashboard/matches" className="flex flex-col items-center gap-1 flex-1">
-            <Button variant="ghost" size="sm" className="w-full">
-              <span className="text-xs">Matchs</span>
-            </Button>
-          </Link>
-          <Link href="/dashboard/groups" className="flex flex-col items-center gap-1 flex-1">
-            <Button variant="ghost" size="sm" className="w-full">
-              <span className="text-xs">Groupes</span>
-            </Button>
-          </Link>
-          <Link href="/profile" className="flex flex-col items-center gap-1 flex-1">
-            <Button variant="ghost" size="sm" className="w-full">
-              <span className="text-xs">Profil</span>
-            </Button>
-          </Link>
-        </div>
-      </nav>
+      {/* Mobile navigation */}
+      <MobileNav />
     </div>
   );
 }
