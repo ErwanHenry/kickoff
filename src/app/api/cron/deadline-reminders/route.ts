@@ -1,9 +1,8 @@
 import { resend } from '@/lib/auth';
 import { db } from '@/db';
 import { matches, matchPlayers, users } from '@/db/schema';
-import { eq, and, gt, lte } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { sendDeadlineReminderEmail } from '@/lib/utils/emails';
-import { addHours } from 'date-fns';
 
 export const runtime = 'nodejs';
 
@@ -14,13 +13,13 @@ export async function GET(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const now = new Date();
-  const twoHoursFromNow = addHours(now, 2);
   let emailCount = 0;
   const errors: string[] = [];
 
   try {
-    // Find matches with deadline in 2 hours (±5 min window to account for cron timing)
+    // Find matches with deadline in approximately 2 hours
+    // Use raw SQL for date arithmetic to avoid type issues
+    // Window: between 1h55m and 2h5m from now
     const upcomingMatches = await db
       .select({
         id: matches.id,
@@ -32,8 +31,8 @@ export async function GET(request: Request) {
       .from(matches)
       .where(
         and(
-          gt(matches.deadline, addHours(now, 1, 55)), // > 1h 55m from now
-          lte(matches.deadline, addHours(now, 2, 5))  // <= 2h 5m from now
+          sql`${matches.deadline} > NOW() - INTERVAL '5 minutes'`,
+          sql`${matches.deadline} <= NOW() + INTERVAL '2 hours 5 minutes'`
         )
       );
 

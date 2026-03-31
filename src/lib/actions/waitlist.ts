@@ -100,42 +100,51 @@ export async function promoteFirstWaitlisted(matchId: string) {
     // Send waitlist promotion email if promoted player has user account
     // Per plan 10-02 Task 7: Integrate waitlist promotion email into RSVP flow
     if (result.promotedPlayer) {
-      try {
-        // Fetch user details if userId exists (registered user)
-        if (updatedPlayer.userId) {
-          const [user] = await db
-            .select({ name: users.name, email: users.email })
-            .from(users)
-            .where(eq(users.id, updatedPlayer.userId))
-            .limit(1);
+      // Fetch the updated player to get userId for email sending
+      const [promotedPlayerDetails] = await db
+        .select()
+        .from(matchPlayers)
+        .where(eq(matchPlayers.id, result.promotedPlayer.id))
+        .limit(1);
 
-          if (user) {
-            // Fetch match details for email
-            const [match] = await db
-              .select({ title: matches.title, date: matches.date, location: matches.location, shareToken: matches.shareToken })
-              .from(matches)
-              .where(eq(matches.id, matchId))
+      if (promotedPlayerDetails) {
+        try {
+          // Fetch user details if userId exists (registered user)
+          if (promotedPlayerDetails.userId) {
+            const [user] = await db
+              .select({ name: users.name, email: users.email })
+              .from(users)
+              .where(eq(users.id, promotedPlayerDetails.userId))
               .limit(1);
 
-            if (match) {
-              await sendWaitlistPromotionEmail(
-                updatedPlayer.userId,
-                user.name,
-                user.email,
-                match.title,
-                match.date,
-                match.location,
-                match.shareToken
-              );
+            if (user) {
+              // Fetch match details for email
+              const [match] = await db
+                .select({ title: matches.title, date: matches.date, location: matches.location, shareToken: matches.shareToken })
+                .from(matches)
+                .where(eq(matches.id, matchId))
+                .limit(1);
+
+              if (match) {
+                await sendWaitlistPromotionEmail(
+                  promotedPlayerDetails.userId,
+                  user.name,
+                  user.email,
+                  match.title,
+                  match.date,
+                  match.location,
+                  match.shareToken
+                );
+              }
             }
+          } else if (promotedPlayerDetails.guestName && promotedPlayerDetails.guestToken) {
+            // Guest without account — skip email (no email address)
+            console.log(`Guest ${promotedPlayerDetails.guestName} promoted (no email sent)`);
           }
-        } else if (updatedPlayer.guestName && updatedPlayer.guestToken) {
-          // Guest without account — skip email (no email address)
-          console.log(`Guest ${updatedPlayer.guestName} promoted (no email sent)`);
+        } catch (emailError) {
+          // Log but don't fail the promotion
+          console.error('Failed to send waitlist promotion email:', emailError);
         }
-      } catch (emailError) {
-        // Log but don't fail the promotion
-        console.error('Failed to send waitlist promotion email:', emailError);
       }
     }
 

@@ -70,29 +70,19 @@ export const auth = betterAuth({
     // Fallback: return null to allow all origins
     return [null];
   },
-  hooks: {
-    after: [
-      {
-        matcher(context) {
-          return context.context?.action === "signUp";
-        },
-        handler: async (ctx) => {
-          // Send welcome email after user registration
-          // Per plan 10-02 Task 8: Integrate welcome email into registration flow
-          const user = ctx.context?.user;
-          if (user?.name && user?.email) {
-            try {
-              await sendWelcomeEmail(user.name, user.email);
-            } catch (emailError) {
-              // Log but don't fail registration
-              console.error('Failed to send welcome email:', emailError);
-            }
-          }
-        },
-      },
-    ],
-  },
 });
+
+// Send welcome email after user registration
+// Note: This is called manually from registration since better-auth hooks may vary by version
+// Per plan 10-02 Task 8: Integrate welcome email into registration flow
+export async function onUserSignUp(userName: string, userEmail: string) {
+  try {
+    await sendWelcomeEmail(userName, userEmail);
+  } catch (emailError) {
+    // Log but don't fail registration
+    console.error('Failed to send welcome email:', emailError);
+  }
+}
 
 // Type exports
 export type Session = typeof auth.$Infer.Session;
