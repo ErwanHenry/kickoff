@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, MapPin, Users, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
 
 /**
  * Match creation form component
@@ -94,7 +95,7 @@ export function MatchForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CalendarDays className="size-5" />
+            <FootballIcon name="chrono" size={20} />
             Quand ?
           </CardTitle>
         </CardHeader>
@@ -140,7 +141,7 @@ export function MatchForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MapPin className="size-5" />
+            <FootballIcon name="pitch" size={20} />
             Où ?
           </CardTitle>
         </CardHeader>
@@ -181,7 +182,7 @@ export function MatchForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="size-5" />
+            <FootballIcon name="cornerFlag" size={20} />
             Combien ?
           </CardTitle>
         </CardHeader>

@@ -70,12 +70,22 @@ export async function getMatchPlayersForRating(matchId: string, raterId: string)
  * Used to prevent duplicate ratings (idempotent check)
  */
 export async function getExistingRatings(matchId: string, raterId: string) {
-  return db
+  const results = await db
     .select({
       ratedId: ratings.ratedId,
+      technique: ratings.technique,
+      physique: ratings.physique,
+      collectif: ratings.collectif,
+      comment: ratings.comment,
     })
     .from(ratings)
     .where(and(eq(ratings.matchId, matchId), eq(ratings.raterId, raterId)));
+
+  // Transform null to undefined for comment
+  return results.map((r) => ({
+    ...r,
+    comment: r.comment || undefined,
+  }));
 }
 
 /**

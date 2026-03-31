@@ -87,24 +87,42 @@ export function RatingForm({
     axis: "technique" | "physique" | "collectif",
     value: number
   ) => {
-    setRatings((prev) => ({
-      ...prev,
-      [playerId]: {
-        ...prev[playerId],
-        [axis]: value,
-      },
-    }));
+    setRatings((prev) => {
+      const current = prev[playerId] || {
+        ratedId: playerId,
+        technique: 0,
+        physique: 0,
+        collectif: 0,
+        comment: "",
+      };
+      return {
+        ...prev,
+        [playerId]: {
+          ...current,
+          [axis]: value,
+        },
+      };
+    });
   };
 
   // Handle comment change
   const handleCommentChange = (playerId: string, comment: string) => {
-    setRatings((prev) => ({
-      ...prev,
-      [playerId]: {
-        ...prev[playerId],
-        comment,
-      },
-    }));
+    setRatings((prev) => {
+      const current = prev[playerId] || {
+        ratedId: playerId,
+        technique: 0,
+        physique: 0,
+        collectif: 0,
+        comment: "",
+      };
+      return {
+        ...prev,
+        [playerId]: {
+          ...current,
+          comment,
+        },
+      };
+    });
   };
 
   // Handle form submission
@@ -133,7 +151,8 @@ export function RatingForm({
         toast.error(result.error);
       } else if (result.success) {
         setIsSubmitted(true);
-        toast.success(`Notes envoyées ! (${result.ratingsCount} joueur${result.ratingsCount > 1 ? "s" : ""} noté${result.ratingsCount > 1 ? "s" : ""})`);
+        const count = result.ratingsCount || 0;
+        toast.success(`Notes envoyées ! (${count} joueur${count > 1 ? "s" : ""} noté${count > 1 ? "s" : ""})`);
 
         // Redirect after 2 seconds (user) or show CTA (guest)
         setTimeout(() => {

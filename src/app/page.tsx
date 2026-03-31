@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Send, Scale, Star } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
 
 export default function LandingPage() {
   return (
@@ -37,17 +37,17 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard
-              icon={<Send className="h-10 w-10 text-primary" />}
+              icon={<FootballIcon name="boot" size={40} className="text-pitch" />}
               title="Inviter"
               description="Partage un lien. Tes potes confirment en 1 tap, sans compte."
             />
             <FeatureCard
-              icon={<Scale className="h-10 w-10 text-primary" />}
+              icon={<FootballIcon name="jersey" size={40} className="text-pitch" />}
               title="Equilibrer"
               description="L'algo forme des equipes equilibrees selon les notes."
             />
             <FeatureCard
-              icon={<Star className="h-10 w-10 text-primary" />}
+              icon={<FootballIcon name="star" size={40} className="text-pitch" />}
               title="Noter"
               description="Apres le match, note tes coequipiers. Le niveau monte."
             />

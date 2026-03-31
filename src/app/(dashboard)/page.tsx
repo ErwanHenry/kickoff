@@ -16,7 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Plus } from "lucide-react";
+import { User, LogOut } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
 
 export const metadata = {
   title: "Dashboard | kickoff",
@@ -99,7 +100,7 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-2">
           <Link href="/matches/new">
             <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
+              <FootballIcon name="centerCircle" size={16} className="mr-2" />
               Nouveau match
             </Button>
           </Link>
@@ -140,7 +141,7 @@ export default async function DashboardPage() {
               </p>
               <Link href="/matches/new">
                 <Button className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
+                  <FootballIcon name="centerCircle" size={16} className="mr-2" />
                   Créer un match
                 </Button>
               </Link>

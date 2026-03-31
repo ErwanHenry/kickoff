@@ -11,40 +11,40 @@
   --color-kickoff-accent: #4ADE80;
   --color-kickoff-accent-foreground: #000000;
 
-  /* shadcn/ui compatible variables */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: 0 0% 98%;
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* shadcn/ui compatible variables - mapped to kickoff colors */
+  --card: #FFFFFF;  /* chalk-pure */
+  --card-foreground: #1E293B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E293B;
+  --primary: #2D5016;  /* pitch */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F8FAF5;  /* chalk */
+  --secondary-foreground: #2D5016;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #BBF7D0;  /* lime-glow */
+  --accent-foreground: #166534;  /* lime-dark */
+  --destructive: #EF4444;  /* red-card */
+  --destructive-foreground: #FFFFFF;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #2D5016;  /* pitch */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #F8FAF5;  /* chalk */
+  --foreground: #1E293B;
+  --chart-1: #4ADE80;  /* lime */
+  --chart-2: #2D5016;  /* pitch */
+  --chart-3: #3B82F6;  /* whistle-blue */
+  --chart-4: #FACC15;  /* yellow-card */
+  --chart-5: #EF4444;  /* red-card */
+  --sidebar: #F8FAF5;
+  --sidebar-foreground: #1E293B;
+  --sidebar-primary: #2D5016;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #2D5016;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #2D5016;
 }
 
 .dark {
@@ -124,6 +124,35 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Custom kickoff colors */
+  --color-pitch: #2D5016;
+  --color-pitch-light: #4A7A2E;
+  --color-pitch-dark: #1A3009;
+  --color-lime: #4ADE80;
+  --color-lime-glow: #BBF7D0;
+  --color-lime-dark: #166534;
+  --color-chalk: #F8FAF5;
+  --color-chalk-pure: #FFFFFF;
+  --color-yellow-card: #FACC15;
+  --color-red-card: #EF4444;
+  --color-whistle-blue: #3B82F6;
+  --color-team-a: #2D5016;
+  --color-team-b: #3B82F6;
+
+  /* Custom font families */
+  --font-family-sans: "DM Sans", sans-serif;
+  --font-family-mono: "Space Mono", monospace;
+
+  /* Custom border radius */
+  --radius-card: 16px;
+  --radius-badge: 20px;
+  --radius-button: 10px;
+
+  /* Custom box shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-btn-hover: 0 4px 12px rgba(45,80,22,0.3);
 }
 
 @layer base {
@@ -132,9 +161,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    background-color: hsl(var(--background));
+    background-color: #F8FAF5;
     color: hsl(var(--foreground));
-    @apply bg-background text-foreground;
+    @apply bg-chalk text-foreground;
   }
   html {
     @apply font-sans;

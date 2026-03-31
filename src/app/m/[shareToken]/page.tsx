@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { getMatchByShareToken, getMatchPlayers, getWaitlistCount } from "@/lib/db/queries/matches";
 import { PlayerList } from "@/components/match/player-list";
 import { RSVPButton } from "@/components/match/rsvp-button";
-import { CalendarDays, MapPin } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -106,19 +106,19 @@ export default async function PublicMatchPage({ params }: PageProps) {
 
           <div className="space-y-3 text-sm">
             <div className="flex items-center gap-3 text-muted-foreground">
-              <CalendarDays className="size-5 shrink-0" />
+              <FootballIcon name="chrono" size={20} className="shrink-0" />
               <div>
                 <p className="font-medium text-foreground">
                   {format(match.date, "EEEE d MMMM", { locale: fr })}
                 </p>
-                <p className="text-xs">
+                <p className="text-xs font-mono">
                   {format(match.date, "HH'h'mm", { locale: fr })}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 text-muted-foreground">
-              <MapPin className="size-5 shrink-0" />
+              <FootballIcon name="pitch" size={20} className="shrink-0" />
               <p className="font-medium text-foreground">{match.location}</p>
             </div>
           </div>

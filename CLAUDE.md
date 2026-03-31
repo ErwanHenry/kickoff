@@ -27,6 +27,98 @@
 | Hosting | Vercel | Edge rendering, preview deploys |
 | Format | PWA | Installable, pas d'app store |
 
+## Design System
+
+The kickoff app uses a custom design system defined in `src/lib/design-tokens.ts` and `src/app/globals.css`.
+
+### Colors (Tailwind classes)
+
+**Semantic Colors:**
+- `text-pitch` / `bg-pitch` — Vert terrain (#2D5016) for headers, CTAs, primary actions
+- `text-lime` / `bg-lime` — Accent (#4ADE80) for success states, confirmations
+- `text-lime-dark` / `bg-lime-glow` — Lime variations for badges
+- `text-chalk` / `bg-chalk` — Background app (#F8FAF5) — off-white with green tint
+- `text-chalk-pure` / `bg-chalk-pure` — White (#FFFFFF) for cards, elevated surfaces
+- `text-red-card` / `bg-red-card` — Destructive (#EF4444) for no-show, errors
+- `text-yellow-card` / `bg-yellow-card` — Warning (#FACC15) for waitlist, attention
+- `text-whistle-blue` / `bg-whistle-blue` — Info (#3B82F6) for links, notifications
+- `text-team-a` / `bg-team-a` — Team A indicators (#2D5016)
+- `text-team-b` / `bg-team-b` — Team B indicators (#3B82F6)
+
+**Shadows & Effects:**
+- `shadow-card` — Default card shadow (0 1px 3px rgba(0,0,0,0.06))
+- `shadow-card-hover` — Card hover state (0 8px 24px rgba(0,0,0,0.12))
+- `shadow-btn-hover` — Button hover (0 4px 12px rgba(45,80,22,0.3))
+
+**Border Radius:**
+- `rounded-card` — 16px for cards
+- `rounded-badge` — 20px for badges
+- `rounded-button` — 10px for buttons
+
+### Typography
+
+**Fonts (via next/font/google):**
+- `font-sans` — DM Sans (weights: 300-700) for body text, headings, descriptions
+- `font-mono` — Space Mono (weights: 400, 700) for scores, stats, labels, timestamps
+
+**Usage Rules:**
+- Apply `font-mono` to: scores (3-2), stats (4.2/5), counters (8/14), timestamps (Mar 15), uppercase labels (CONFIRMÉ, ÉQUIPE A)
+- Apply `font-sans` to: everything else (titles, body, descriptions, navigation)
+
+### Icons
+
+**Domain Icons (FootballIcon):**
+Always use `<FootballIcon name="..." />` for football concepts:
+- `centerCircle` — Match/Event (CTA créer match, nav, header)
+- `ball` — Score/Rating (post-match, scores)
+- `boot` — Players/RSVP ("Je suis là!" button, confirmés list)
+- `goal` — Results (final score, history)
+- `whistle` — Notifications (alerts, reminders)
+- `cornerFlag` — Groups (nav groups, create group)
+- `lineRef` — Waitlist/Rules (badge waitlist, promotions)
+- `jersey` — Team assigned (badge team A/B, draft)
+- `card` — Status cards (warning, no-show, confirmé)
+- `pitch` — Dashboard (home, overview)
+- `star` — Ranking (leaderboard, player profile)
+- `chrono` — Deadline/Timing (countdown, match time)
+
+Import: `import { FootballIcon } from "@/components/icons/football-icons"`
+
+**Navigation Icons (Lucide React):**
+Keep lucide-react for UI navigation only: ChevronLeft, ChevronRight, X, Menu, Search, Copy, ExternalLink, MoreVertical.
+
+**Rule:** Never use Lucide icons for domain concepts (e.g., don't use `Star` for ratings — use `FootballIcon name="star"`).
+
+### Badges & Tokens
+
+**Status Badges:**
+Import and use `statusBadges` from `design-tokens.ts`:
+```typescript
+import { statusBadges } from "@/lib/design-tokens"
+
+const badge = statusBadges.confirmed
+// Returns: { bg: "bg-lime-glow", text: "text-lime-dark", icon: "boot", label: "Confirmé" }
+```
+
+Available statuses: confirmed, waitlisted, cancelled, no_show, locked, open, full, played, rated
+
+**Attendance Badge:**
+Use `attendanceBadge()` function for attendance rate display:
+```typescript
+import { attendanceBadge } from "@/lib/design-tokens"
+
+const badge = attendanceBadge(92) // >= 90%
+// Returns: { emoji: "🟢", label: "Fiable", className: "text-green-600" }
+```
+
+### Layout Patterns
+
+**App Background:** `bg-chalk` (#F8FAF5) — applied globally in layout.tsx body
+
+**Cards:** `bg-chalk-pure` (white) with `shadow-card`
+
+**Container:** Mobile-first with `max-w-2xl` container for main content areas
+
 ## Commandes
 
 ```bash

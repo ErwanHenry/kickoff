@@ -18,7 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Check, X, AlertTriangle } from "lucide-react";
+import { Check, X } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
 
 interface Player {
   id: string;
@@ -122,7 +123,7 @@ export function AttendanceForm({ players, matchId, closeMatchAction }: Attendanc
 
         {!isPresent && (
           <div className="flex items-center gap-1 text-xs text-destructive shrink-0">
-            <AlertTriangle className="h-3 w-3" />
+            <FootballIcon name="card" size={12} />
             <span className="hidden sm:inline">no_show</span>
           </div>
         )}
@@ -311,7 +312,7 @@ export function AttendanceForm({ players, matchId, closeMatchAction }: Attendanc
 
           {absentCount > 0 && (
             <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              <FootballIcon name="card" size={16} className="shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium">{absentCount} joueur(s) absent(s)</p>
                 <p className="text-xs opacity-90">

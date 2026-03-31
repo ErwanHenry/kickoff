@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar } from "lucide-react";
+import { FootballIcon } from "@/components/icons/football-icons";
+import { statusBadges } from "@/lib/design-tokens";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
 import type { Match } from "@/db/schema";
@@ -26,24 +28,15 @@ export function MatchCard({ match, variant }: MatchCardProps) {
     locale: fr,
   });
 
-  // Status badge configuration
-  const statusConfig: Record<string, { label: string; variant: "default" | "destructive" | "secondary" | "outline" }> = {
-    open: { label: "Ouvert", variant: "default" },
-    full: { label: "Complet", variant: "destructive" },
-    locked: { label: "Verrouillé", variant: "secondary" },
-    draft: { label: "Brouillon", variant: "outline" },
-    played: { label: "Joué", variant: "secondary" },
-    rated: { label: "Noté", variant: "outline" },
-  };
-
-  const status = match.status ? statusConfig[match.status] : statusConfig.open;
+  // Get status badge from design tokens
+  const badge = statusBadges[match.status as keyof typeof statusBadges] || statusBadges.open;
 
   // Determine link based on variant
   const href = variant === "upcoming" ? `/m/${match.shareToken}` : `/match/${match.id}`;
 
   return (
     <Link href={href}>
-      <Card className="group hover:scale-105 transition-transform duration-200 cursor-pointer">
+      <Card className="group hover:scale-105 transition-transform duration-200 cursor-pointer shadow-card hover:shadow-card-hover rounded-card">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -51,22 +44,23 @@ export function MatchCard({ match, variant }: MatchCardProps) {
                 {match.title || `Match du ${formattedDate}`}
               </h3>
               <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                <FootballIcon name="chrono" size={14} className="flex-shrink-0" />
                 <span className="truncate">{formattedDate}</span>
               </div>
               <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                <FootballIcon name="pitch" size={14} className="flex-shrink-0" />
                 <span className="truncate">{match.location}</span>
               </div>
             </div>
-            <Badge variant={status?.variant ?? "default"} className="flex-shrink-0">
-              {status?.label ?? "Ouvert"}
+            <Badge className={cn(badge.bg, badge.text, "flex-shrink-0 gap-1.5")}>
+              <FootballIcon name={badge.icon} size={14} />
+              {badge.label}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
+            <span className="text-muted-foreground font-mono">
               {match.confirmedCount ?? 0}/{match.maxPlayers} confirmés
             </span>
             <span className="text-primary font-medium group-hover:underline">
