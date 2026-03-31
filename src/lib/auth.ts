@@ -4,6 +4,7 @@ import { magicLink } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { Resend } from "resend";
+import { sendWelcomeEmail } from "@/lib/utils/emails";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -68,6 +69,28 @@ export const auth = betterAuth({
     }
     // Fallback: return null to allow all origins
     return [null];
+  },
+  hooks: {
+    after: [
+      {
+        matcher(context) {
+          return context.context?.action === "signUp";
+        },
+        handler: async (ctx) => {
+          // Send welcome email after user registration
+          // Per plan 10-02 Task 8: Integrate welcome email into registration flow
+          const user = ctx.context?.user;
+          if (user?.name && user?.email) {
+            try {
+              await sendWelcomeEmail(user.name, user.email);
+            } catch (emailError) {
+              // Log but don't fail registration
+              console.error('Failed to send welcome email:', emailError);
+            }
+          }
+        },
+      },
+    ],
   },
 });
 
