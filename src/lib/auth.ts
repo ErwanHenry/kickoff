@@ -73,7 +73,7 @@ export const auth = betterAuth({
 });
 
 // Send welcome email after user registration
-// Note: This is called manually from registration since better-auth hooks may vary by version
+// Note: This is called manually from registration Server Action
 // Per plan 10-02 Task 8: Integrate welcome email into registration flow
 export async function onUserSignUp(userName: string, userEmail: string) {
   try {
