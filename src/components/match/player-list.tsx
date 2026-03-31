@@ -3,12 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import Link from "next/link";
+import { FootballIcon } from "@/components/icons/football-icons";
 
 interface Player {
   id: string;
   name: string;
   status: string;
   confirmedAt: Date | null;
+  userId?: string | null; // New field to distinguish guests from registered users
 }
 
 interface PlayerListProps {
@@ -22,6 +25,7 @@ interface PlayerListProps {
  * Player list component for public match page
  * Displays confirmed players with avatars, progress ring, and status badge
  * Per 02-UI-SPEC.md "Player List" section
+ * Per PLAN 07-02 Task 3: Registered user names link to their profile pages
  */
 export function PlayerList({ players, confirmed, max, waitlistCount }: PlayerListProps) {
   const isFull = confirmed >= max;
@@ -80,26 +84,43 @@ export function PlayerList({ players, confirmed, max, waitlistCount }: PlayerLis
         ) : (
           <div className="space-y-3">
             {/* Confirmed players list (per CONTEXT.md D-11) */}
-            {players.map((player) => (
-              <div key={player.id} className="flex items-center gap-3">
-                <Avatar size="sm">
-                  <AvatarFallback className="bg-primary/10">
-                    {player.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{player.name}</p>
-                  {player.confirmedAt && (
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(player.confirmedAt), {
-                        addSuffix: true,
-                        locale: fr,
-                      })}
-                    </p>
-                  )}
+            {players.map((player) => {
+              const isRegisteredUser = !!player.userId;
+
+              return (
+                <div key={player.id} className="flex items-center gap-3">
+                  <Avatar size="sm">
+                    <AvatarFallback className="bg-primary/10">
+                      {player.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    {/* Player name - clickable for registered users */}
+                    {isRegisteredUser ? (
+                      <Link
+                        href={`/player/${player.userId}`}
+                        className="text-sm font-medium truncate hover:text-whistle-blue transition-colors no-underline flex items-center gap-1"
+                      >
+                        <FootballIcon name="star" size={12} className="text-lime shrink-0" />
+                        {player.name}
+                      </Link>
+                    ) : (
+                      <p className="text-sm font-medium truncate text-muted-foreground">
+                        {player.name}
+                      </p>
+                    )}
+                    {player.confirmedAt && (
+                      <p className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(player.confirmedAt), {
+                          addSuffix: true,
+                          locale: fr,
+                        })}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

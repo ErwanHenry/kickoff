@@ -28,6 +28,7 @@ export async function getMatchPlayers(matchId: string) {
       status: matchPlayers.status,
       confirmedAt: matchPlayers.confirmedAt,
       guestToken: matchPlayers.guestToken,
+      userId: matchPlayers.userId, // Include userId for profile links
     })
     .from(matchPlayers)
     .leftJoin(users, eq(matchPlayers.userId, users.id))
