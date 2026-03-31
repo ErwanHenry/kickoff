@@ -3,11 +3,12 @@
 **Created:** 2026-03-30
 **Granularity:** Fine
 **Coverage:** 73/73 requirements mapped
-**Phases:** 10
+**Phases:** 11
 
 ## Phases
 
 - [x] **Phase 1: Foundation** - Project setup, database schema, authentication, PWA configuration
+- [x] **Phase 1.1: Setup Design System** - Fonts, colors, icons, design tokens
 - [ ] **Phase 2: Match Creation & Guest RSVP** - Core CRUD, public match page, zero-friction guest flow
 - [ ] **Phase 3: Waitlist & Dashboard** - Automatic promotion, organizer dashboard
 - [ ] **Phase 4: Team Balancing** - Algorithm, team generation UI, balance indicators
@@ -23,9 +24,10 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 7/7 | Complete | 2026-03-30 |
+| 1.1. Setup Design System | 4/4 | Complete | 2026-03-31 |
 | 2. Match Creation & Guest RSVP | 1/3 | In Progress|  |
 | 3. Waitlist & Dashboard | 2/3 | In Progress|  |
-| 4. Team Balancing | 0/3 | Not started | - |
+| 4. Team Balancing | 0/1 | Planning | - |
 | 5. Post-Match Closure | 1/1 | Planning | - |
 | 6. Ratings & Stats | 0/3 | Not started | - |
 | 7. Player Profiles | 0/2 | Not started | - |
@@ -65,6 +67,22 @@
 **UI hint:** yes
 
 ---
+
+### Phase 01.1: Setup Design System (INSERTED)
+
+**Goal:** Establish design system foundation — fonts, colors, icons, and tokens for subsequent UI phases.
+**Requirements**: UI-SPEC (see .planning/phases/01.1-setup-design-system/01.1-UI-SPEC.md)
+**Depends on:** Phase 1
+**Plans:** 4 plans in 4 focused phases
+
+| Wave | Plan | Objective |
+|------|------|-----------|
+| 1 | 01.1-01-PLAN.md | Setup Design System Foundation (fonts, Tailwind extend, FootballIcon, design-tokens, CLAUDE.md docs) |
+| 2 | 01.1-02a-PLAN.md | Retrofit Colors & Backgrounds (replace hardcoded hex with kickoff palette) |
+| 3 | 01.1-02b-PLAN.md | Retrofit Icons & Typography (FootballIcon for domain concepts, mono for data) |
+| 4 | 01.1-02c-PLAN.md | Retrofit Tokens & Badges (statusBadges, attendanceBadge, shadows, border-radius) |
+
+**UI hint:** yes (see 01.1-UI-SPEC.md)
 
 ### Phase 2: Match Creation & Guest RSVP
 
@@ -139,13 +157,13 @@
 6. Teams display balance indicator (Equilibre / Leger avantage / Desequilibre)
 7. Match locks when teams are finalized
 
-**Plans:** 3 plans in 3 waves
+**Plans:** 1 plan in 1 wave (consolidated from original 3 plans — algorithm, Server Actions, and UI components already exist)
 
 | Wave | Plan | Objective |
 |------|------|-----------|
-| 1 | 04-01-PLAN.md | Team balancing algorithm (brute-force + serpentine) with unit tests |
-| 2 | 04-02-PLAN.md | Database queries + Server Actions for team generation and locking |
-| 3 | 04-03-PLAN.md | Team reveal UI with @dnd-kit drag-and-drop + balance indicator |
+| 1 | 04-01-PLAN.md | Complete team balancing feature (add getMatchTeams query, update teams page, apply design system to UI components) |
+
+**Note:** The team balancing algorithm (brute-force + serpentine), Server Actions (generateTeams, reassignPlayer), and UI components (TeamReveal, BalanceIndicator, DraggablePlayerCard) are already implemented. This plan adds the missing database query and applies the design system.
 
 **UI hint:** yes
 
@@ -341,4 +359,4 @@
 **Unmapped:** 0
 
 ---
-*Last updated: 2026-03-30*
+*Last updated: 2026-03-31*
