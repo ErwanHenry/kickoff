@@ -16,8 +16,9 @@
 - [ ] **Phase 6: Ratings & Stats** - 3-axis rating system, player stats calculation
 - [ ] **Phase 7: Player Profiles** - Stats display, radar charts, match history, comments
 - [ ] **Phase 8: Groups & Leaderboards** - Group management, invite codes, rankings
-- [ ] **Phase 9: Recurrence & Automation** - Weekly match creation, cron jobs
+- [x] **Phase 9: Recurrence & Automation** - Weekly match creation, cron jobs
 - [ ] **Phase 10: Polish & Production** - OG images, email notifications, guest merge, deploy
+- [ ] **Phase 11: Post-MVP** - Future enhancements (deferred)
 
 ## Progress
 
@@ -32,8 +33,8 @@
 | 6. Ratings & Stats | 3/3 | Complete | 2026-03-31 |
 | 7. Player Profiles | 1/2 | In Progress|  |
 | 8. Groups & Leaderboards | 0/3 | Not started | - |
-| 9. Recurrence & Automation | 0/2 | Not started | - |
-| 10. Polish & Production | 0/4 | Not started | - |
+| 9. Recurrence & Automation | 3/3 | Complete | 2026-03-31 |
+| 10. Polish & Production | 0/5 | Planning | 2026-03-31 |
 
 ## Phase Details
 
@@ -303,12 +304,13 @@
 4. Players are NOT auto-confirmed (must RSVP each week)
 5. Organizer can set match recurrence (none / weekly)
 
-**Plans:** 2 plans in 2 waves
+**Plans:** 3 plans in 3 waves (COMPLETE)
 
 | Wave | Plan | Objective |
 |------|------|-----------|
-| 1 | 09-01-PLAN.md | Cron infrastructure + recurring match creation (Vercel Cron, CRON_SECRET, recurrence queries, Server Action, cron endpoint) |
-| 2 | 09-02-PLAN.md | Email notifications for recurring matches (branded HTML template, Resend integration, cron endpoint update) |
+| 0 | 09-00-PLAN.md | Test infrastructure (TDD test stubs for recurrence logic) ✅ |
+| 2 | 09-01-PLAN.md | Cron infrastructure + recurring match creation (Vercel Cron, CRON_SECRET, recurrence queries, Server Action, cron endpoint) ✅ |
+| 2 | 09-02-PLAN.md | Email notifications for recurring matches (branded HTML template, Resend integration, cron endpoint update) ✅ |
 
 **UI hint:** yes
 
@@ -332,14 +334,36 @@
 7. Guest can create account and merge all match history
 8. App is deployed to production with all features working
 
-**Plans:** 2 plans in 2 waves
+**Plans:** 5 plans in 4 waves (CREATED 2026-03-31)
 
 | Wave | Plan | Objective |
 |------|------|-----------|
-| 1 | 09-01-PLAN.md | Cron infrastructure + recurring match creation (Vercel Cron, CRON_SECRET, recurrence queries, Server Action, cron endpoint) |
-| 2 | 09-02-PLAN.md | Email notifications for recurring matches (branded HTML template, Resend integration, cron endpoint update) |
+| 0 | 10-00-PLAN.md | Test infrastructure (TDD test stubs for OG, emails, guest merge) |
+| 1 | 10-01-PLAN.md | OG image generation (@vercel/og, Edge runtime, WhatsApp preview integration) |
+| 1 | 10-02-PLAN.md | Email notifications (plain text templates, notification preferences, waitlist/deadline/rating/welcome emails, cron job) |
+| 2 | 10-03-PLAN.md | Guest-to-user merge (mergeGuestToUser function, registration integration, stats recalculation) |
+| 3 | 10-04-PLAN.md | Manual verification & production deployment (OG preview tests, email delivery tests, guest merge tests, PWA install, responsive check, Vercel deploy) |
+
+**Note:** NOTIF-04 (group members receive email for new recurring match) was completed in Phase 09 (Plan 09-02). Phase 10 implements remaining notification types (NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-05).
 
 **UI hint:** yes
+
+---
+
+### Phase 11: Post-MVP (DEFERRED)
+
+**Goal:** Future enhancements beyond MVP scope.
+
+**Requirements:** None (out of scope for v1)
+
+**Potential Features:**
+- Payment collection (Stripe/Lydia integration)
+- Venue booking (UrbanSoccer/Le Five API)
+- Advanced match stats (goals, assists)
+- Calendar sync (Google Calendar)
+- Multi-sport support
+
+**Status:** Deferred — not planned
 
 ---
 
@@ -384,9 +408,9 @@
 | SHARE-01 | 10 | SHARE-02 | 10 |
 | SHARE-03 | 2 | NOTIF-01 | 10 |
 | NOTIF-02 | 10 | NOTIF-03 | 10 |
-| NOTIF-04 | 10 | NOTIF-05 | 10 |
+| NOTIF-04 | 9 | NOTIF-05 | 10 |
 
-**Total:** 73 requirements mapped to 10 phases
+**Total:** 73 requirements mapped to 11 phases
 **Unmapped:** 0
 
 ---
