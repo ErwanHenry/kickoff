@@ -132,3 +132,115 @@ export function updatePlayerStatsFromRatings(
     totalRatingsReceived: newCount,
   };
 }
+
+/**
+ * Recalculate player stats from database
+ * Used after guest merge, match closure, rating submissions
+ * Per CONTEXT.md D-15: Core data only merge (match_players and ratings)
+ *
+ * @param userId - The user ID to recalculate stats for
+ * @param groupId - Optional group ID to limit recalculation to specific group
+ */
+export async function recalculatePlayerStats(
+  userId: string,
+  groupId?: string
+): Promise<void> {
+  const { db } = await import('@/db');
+  const { matchPlayers, ratings, playerStats } = await import('@/db/schema');
+  const { eq, and, sql } = await import('drizzle-orm');
+
+  // Build where condition for match_players (no groupId on matchPlayers table)
+  const whereCondition = eq(matchPlayers.userId, userId);
+
+  // Count matches played, attended, no-show
+  const statsResult = await db
+    .select({
+      matchesPlayed: sql<number>`count(*)::int`,
+      matchesAttended: sql<number>`count(*) filter (where ${matchPlayers.attended} = true)::int`,
+      matchesNoShow: sql<number>`count(*) filter (where ${matchPlayers.status} = 'no_show')::int`,
+    })
+    .from(matchPlayers)
+    .where(whereCondition);
+
+  const stats = statsResult[0] || { matchesPlayed: 0, matchesAttended: 0, matchesNoShow: 0 };
+
+  // Get average ratings
+  const ratingsAvgResult = await db
+    .select({
+      avgTechnique: sql<string>`avg(${ratings.technique})::text`,
+      avgPhysique: sql<string>`avg(${ratings.physique})::text`,
+      avgCollectif: sql<string>`avg(${ratings.collectif})::text`,
+    })
+    .from(ratings)
+    .where(eq(ratings.ratedId, userId));
+
+  const ratingsAvg = ratingsAvgResult[0];
+
+  const avgTechnique = parseDecimal(ratingsAvg?.avgTechnique);
+  const avgPhysique = parseDecimal(ratingsAvg?.avgPhysique);
+  const avgCollectif = parseDecimal(ratingsAvg?.avgCollectif);
+
+  // Calculate weighted overall: technique * 0.4 + physique * 0.3 + collectif * 0.3
+  const avgOverall = calculateWeightedOverall(avgTechnique, avgPhysique, avgCollectif);
+
+  const attendanceRate = stats.matchesPlayed > 0
+    ? (stats.matchesAttended / stats.matchesPlayed) * 100
+    : 0;
+
+  // Get last match date
+  const lastMatchDataResult = await db
+    .select({
+      lastMatchDate: sql<Date>`max(${matchPlayers.confirmedAt})`,
+    })
+    .from(matchPlayers)
+    .where(eq(matchPlayers.userId, userId));
+
+  const lastMatchData = lastMatchDataResult[0];
+
+  // Count total ratings received
+  const ratingCountResult = await db
+    .select({
+      count: sql<number>`count(*)::int`,
+    })
+    .from(ratings)
+    .where(eq(ratings.ratedId, userId));
+
+  const ratingCount = ratingCountResult[0]?.count || 0;
+
+  // Upsert player_stats
+  await db
+    .insert(playerStats)
+    .values({
+      userId,
+      groupId: groupId || null,
+      matchesPlayed: stats.matchesPlayed,
+      matchesConfirmed: stats.matchesPlayed, // Assumption: confirmed = played for now
+      matchesAttended: stats.matchesAttended,
+      matchesNoShow: stats.matchesNoShow,
+      attendanceRate: attendanceRate.toFixed(2),
+      avgTechnique: avgTechnique.toFixed(2),
+      avgPhysique: avgPhysique.toFixed(2),
+      avgCollectif: avgCollectif.toFixed(2),
+      avgOverall: avgOverall.toFixed(2),
+      totalRatingsReceived: ratingCount,
+      lastMatchDate: lastMatchData?.lastMatchDate,
+      lastUpdated: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: [playerStats.userId, playerStats.groupId],
+      set: {
+        matchesPlayed: stats.matchesPlayed,
+        matchesConfirmed: stats.matchesPlayed,
+        matchesAttended: stats.matchesAttended,
+        matchesNoShow: stats.matchesNoShow,
+        attendanceRate: attendanceRate.toFixed(2),
+        avgTechnique: avgTechnique.toFixed(2),
+        avgPhysique: avgPhysique.toFixed(2),
+        avgCollectif: avgCollectif.toFixed(2),
+        avgOverall: avgOverall.toFixed(2),
+        totalRatingsReceived: ratingCount,
+        lastMatchDate: lastMatchData?.lastMatchDate,
+        lastUpdated: new Date(),
+      },
+    });
+}
