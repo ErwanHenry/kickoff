@@ -1,0 +1,5 @@
+{
+  "id": "add-account-id-pk",
+  "version": "7",
+  "dialect": "postgresql"
+}
