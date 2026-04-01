@@ -63,9 +63,9 @@ export const sessions = pgTable("session", {
 });
 
 // Account table for better-auth (stores OAuth and email/password data)
+// better-auth uses accountId as the primary key (not a separate id field)
 export const accounts = pgTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
+  accountId: text("account_id").primaryKey(),
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })

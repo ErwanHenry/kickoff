@@ -63,13 +63,20 @@ export const auth = betterAuth({
     if (process.env.NODE_ENV === "development") {
       return ["http://localhost:3000"];
     }
-    // In production, allow the current request origin
+    // In production, allow the current request origin and the configured APP_URL
+    const allowed = [];
     if (request?.url) {
       const url = new URL(request.url);
-      return [url.origin];
+      allowed.push(url.origin);
+    }
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      allowed.push(process.env.NEXT_PUBLIC_APP_URL);
+    }
+    if (process.env.BETTER_AUTH_URL) {
+      allowed.push(process.env.BETTER_AUTH_URL);
     }
     // Fallback: return null to allow all origins
-    return [null];
+    return allowed.length > 0 ? allowed : [null];
   },
 });
 
