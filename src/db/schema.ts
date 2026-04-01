@@ -39,8 +39,9 @@ export const groupRoleEnum = pgEnum("group_role", ["captain", "manager", "player
 // ============ BETTER-AUTH TABLES ============
 
 // User table - better-auth requires text id, not uuid
+// better-auth will handle ID generation
 export const users = pgTable("users", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  id: text("id").primaryKey(),
   email: text("email").unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   name: text("name").notNull(),
@@ -63,7 +64,8 @@ export const sessions = pgTable("session", {
 
 // Account table for better-auth (stores OAuth and email/password data)
 export const accounts = pgTable("account", {
-  accountId: text("account_id").primaryKey(),
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
@@ -73,6 +75,8 @@ export const accounts = pgTable("account", {
   idToken: text("id_token"),
   expiresAt: timestamp("expires_at"),
   password: text("password"), // For email/password auth
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // ============ APPLICATION TABLES ============
@@ -90,7 +94,7 @@ export const notificationPreferences = pgTable("notification_preferences", {
 });
 
 export const groups = pgTable("groups", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").unique().notNull(),
   createdBy: text("created_by")
@@ -119,7 +123,7 @@ export const groupMembers = pgTable(
 );
 
 export const matches = pgTable("matches", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  id: text("id").primaryKey(),
   groupId: text("group_id").references(() => groups.id, { onDelete: "set null" }),
   createdBy: text("created_by")
     .references(() => users.id)
@@ -142,7 +146,7 @@ export const matches = pgTable("matches", {
 });
 
 export const matchPlayers = pgTable("match_players", {
-  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  id: text("id").primaryKey(),
   matchId: text("match_id")
     .references(() => matches.id, { onDelete: "cascade" })
     .notNull(),
@@ -159,7 +163,7 @@ export const matchPlayers = pgTable("match_players", {
 export const ratings = pgTable(
   "ratings",
   {
-    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    id: text("id").primaryKey(),
     matchId: text("match_id")
       .references(() => matches.id, { onDelete: "cascade" })
       .notNull(),
@@ -183,7 +187,7 @@ export const ratings = pgTable(
 export const playerStats = pgTable(
   "player_stats",
   {
-    id: text("id").primaryKey().$defaultFn(() => nanoid()),
+    id: text("id").primaryKey(),
     userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),

@@ -2,9 +2,10 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-// Use unpooled URL for serverless driver (@neondatabase/serverless requires direct connection)
-// The pooled URL (-pooler) uses PgBouncer which doesn't work with the HTTP driver
-const sql = neon(process.env.DATABASE_URL_UNPOOLED!);
+// Use DATABASE_URL for serverless driver
+// Note: The @neondatabase/serverless HTTP driver works with both pooled and unpooled URLs
+// The comment about PgBouncer only applies to the WebSocket driver (@neondatabase/serverless/ws)
+const sql = neon(process.env.DATABASE_URL!);
 
 export const db = drizzle(sql, { schema });
 
