@@ -1,3 +1,28 @@
+# kickoff — Contexte pour Claude/Keel
+
+> Brief de direction ajouté le 2026-07-11 (rétro-ingénierie, whitelist Keel). Le guide technique d'origine (stack, design system, phases GSD) est conservé intégralement plus bas.
+
+## Ce que c'est
+PWA d'organisation de matchs de foot entre potes (Next.js 15, Neon/Drizzle, better-auth, Resend, Vercel) : lien de RSVP sans compte partageable sur WhatsApp, waitlist automatique, équilibrage d'équipes basé sur les notes post-match, profils/stats joueurs et groupes avec leaderboard. Contrairement à ce que suggère le README par défaut de create-next-app, l'app est quasi complète : milestone v1.0 terminée (phases 1-10, 36 plans), déployée sur Vercel.
+
+## Intention déduite du créateur
+**Hypothèse à valider par Erwan.** Résoudre une douleur personnelle réelle — l'enfer logistique du foot hebdomadaire — avec un produit B2C minimaliste dont le pari central est le RSVP zéro-friction (« si le flow guest ne marche pas, rien d'autre ne compte », cf. DESIGN_DOC.md). Le projet a aussi servi de terrain d'entraînement GSD/Claude Code. Arrêt net en avril 2026, non par désintérêt mais sur un bug bloquant : l'inscription better-auth renvoie une 500 en production (génération d'IDs `$defaultFn` suspectée, cf. `.continue-here.md` et `.planning/debug/better-auth-signup-error.md`). Le produit est à environ un bug du premier vrai match.
+
+## Direction recommandée
+Ne pas repartir en développement de features : **finir le dernier kilomètre et faire jouer un vrai groupe**. Le différenciateur (guest RSVP + team balancing) est déjà codé et testé. Aucun recouvrement avec le portefeuille (alignd = CRM/ATS pro, aisenhower = todo IA, email-reacher = email finder) : kickoff est le seul produit B2C « vie perso ». Critère de succès : un match réel organisé de bout en bout (création → lien WhatsApp → RSVP guests → équipes → notation). Si après cela personne ne l'utilise une deuxième fois, archiver proprement en connaissance de cause.
+
+## Roadmap proposée
+1. **Débloquer le signup (1 session)** : reprendre `.continue-here.md` et `.planning/debug/better-auth-signup-error.md`, corriger la génération d'IDs (laisser better-auth générer, ou défaut SQL `gen_random_uuid()`), tester l'inscription avec un email neuf en production.
+2. **Parcours complet en prod** : dérouler créer match → RSVP guest via lien → génération d'équipes → clôture → notation avec des données réelles ; corriger les accrocs rencontrés.
+3. **Premier vrai match** : préparer un match prêt à partager pour le groupe foot d'Erwan (action humaine requise ; Keel prépare tout et fournit le lien).
+4. **Boucle de rétention** : vérifier en prod les crons (matchs récurrents, rappels deadline) et les emails Resend.
+5. **Bilan d'usage** : après 3-4 semaines, STATE.md avec métriques (matchs créés, RSVP, comptes créés) → décision continuer/archiver.
+
+## Première action pour Keel
+Lire `.planning/debug/better-auth-signup-error.md` et `src/db/schema.ts`, vérifier si le fix d'IDs a été appliqué depuis le commit 863e6f0, lancer `pnpm build && pnpm typecheck`, et consigner dans STATE.md l'état exact du bug signup (toujours présent ou corrigé) avec l'option de fix recommandée.
+
+---
+
 # CLAUDE.md — kickoff
 
 > App web (PWA) pour organiser des matchs de foot entre potes.
