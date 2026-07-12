@@ -8,8 +8,31 @@ import { NextResponse } from "next/server";
  *
  * Idempotent and additive — safe to call multiple times. See the SQL file in
  * src/db/migrations/0009_fix_better_auth_schema.sql for the full rationale.
+ *
+ * Protected by CRON_SECRET (same guard as the Vercel cron routes) — this endpoint
+ * mutates the production schema, so it must never be publicly callable. Invoke with:
+ *   curl -H "Authorization: Bearer $CRON_SECRET" https://<domaine-prod>/api/apply-migration
  */
-export async function GET() {
+export async function GET(request: Request) {
+  // Auth guard — mirrors the cron routes (D-11/D-12): 500 if the secret is not
+  // configured, 401 on any mismatch. Blocks anonymous callers from mutating prod.
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    console.error("[apply-migration] Server misconfigured: CRON_SECRET env var missing");
+    return NextResponse.json(
+      { success: false, error: "Server misconfigured" },
+      { status: 500 }
+    );
+  }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    console.warn("[apply-migration] Unauthorized access attempt");
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const steps: string[] = [];
   try {
     const url = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED;
