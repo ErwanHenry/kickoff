@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     const providerId = "credential";
 
     await db.insert(accounts).values({
-      accountId: userId, // This is what better-auth uses as account_id
+      id: nanoid(), // better-auth requires a dedicated id primary key
+      accountId: userId, // Provider-side identifier (userId for credential accounts)
       providerId,
       userId,
       password, // In real code, this would be hashed

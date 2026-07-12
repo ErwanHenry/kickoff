@@ -10,7 +10,6 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { nanoid } from "nanoid";
 
 // ============ ENUMS ============
 
@@ -51,6 +50,7 @@ export const users = pgTable("users", {
 });
 
 // Session table for better-auth
+// better-auth v1.5 requires createdAt/updatedAt on the session model
 export const sessions = pgTable("session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
@@ -60,12 +60,18 @@ export const sessions = pgTable("session", {
   token: text("token").unique().notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Account table for better-auth (stores OAuth and email/password data)
-// better-auth uses accountId as the primary key (not a separate id field)
+// better-auth requires its own `id` primary key; `accountId` is the
+// provider-side identifier (equal to userId for credential accounts).
+// Fix for the production signup 500: "The field 'id' does not exist in the
+// 'account' Drizzle schema" — better-auth generates `id` itself, no DB default.
 export const accounts = pgTable("account", {
-  accountId: text("account_id").primaryKey(),
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
@@ -73,8 +79,20 @@ export const accounts = pgTable("account", {
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
-  expiresAt: timestamp("expires_at"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
   password: text("password"), // For email/password auth
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Verification table for better-auth (magic link tokens, password resets)
+export const verifications = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

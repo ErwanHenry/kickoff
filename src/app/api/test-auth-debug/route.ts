@@ -45,6 +45,7 @@ export async function GET() {
 
     try {
       await db.insert(accounts).values({
+        id: nanoid(),
         accountId: accountId,
         providerId: "email",
         userId: testUserId,
