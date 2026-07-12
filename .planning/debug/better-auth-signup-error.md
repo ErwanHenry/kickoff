@@ -1,9 +1,33 @@
 ---
-status: investigating
+status: resolved
 trigger: "better-auth-signup-error: Better Auth email/password signup returns 422 error 'Failed to create user' after database migration from UUID to text IDs"
 created: 2026-04-01T12:00:00Z
-updated: 2026-04-01T21:00:00Z
+updated: 2026-07-12T00:00:00Z
+resolved: 2026-07-12 (commit c268f31)
 ---
+
+## RESOLUTION FINALE (2026-07-12, commit c268f31)
+
+root_cause: Le schéma Drizzle des tables better-auth ne correspondait pas au
+modèle exigé par better-auth v1.5.6. (1) `account` doit avoir sa propre PK `id`
+— `accountId` est l'identifiant provider, PAS la PK. L'evidence du 2026-04-01T17:00Z
+(« The field 'id' does not exist in the 'account' Drizzle schema ») était la
+bonne piste ; la conclusion du 20:00 (« better-auth expects accountId to be the
+primary key ») était erronée — le NOT NULL violation de 19:45 venait du fait que
+la colonne `id` avait été ajoutée en DB sans être déclarée dans le schéma Drizzle.
+(2) `session` : `createdAt`/`updatedAt` manquants (requis à chaque création).
+(3) table `verification` absente (requise par le plugin magic link).
+Ni un bug better-auth, ni une incompatibilité Next.js, ni `$defaultFn`.
+
+fix: schéma Drizzle aligné (account.id PK, champs token v1.5, timestamps session,
+table verification), mapping verification dans l'adapter, migration idempotente
+0009 + endpoint /api/apply-migration réécrit pour l'appliquer en prod.
+
+verification: reproduit en local à l'identique (même BetterAuthError) via test
+d'intégration PGlite AVANT fix ; APRÈS fix : signup → user + account (credential,
+password hashé) + session créés, doublon → 422, signin OK, magic link → verification.
+Fichier : src/lib/__tests__/integration/auth-signup.test.ts (84/84 verts).
+Validation prod restante : GET /api/apply-migration puis signup email neuf.
 
 ## Current Focus
 
