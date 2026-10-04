@@ -2,7 +2,7 @@
 
 # Test signup flow after fixing database schema issue
 
-BASE_URL="https://kickoff-o3hnrh41k-erwan-henrys-projects.vercel.app"
+BASE_URL="https://kickoff.vercel.app"
 TIMESTAMP=$(date +%s)
 TEST_EMAIL="test-signup-${TIMESTAMP}@example.com"
 
