@@ -87,6 +87,7 @@ export async function rsvpMatch(formData: FormData) {
       const players = await tx
         .insert(matchPlayers)
         .values({
+          id: crypto.randomUUID(),
           matchId: matchData.id,
           guestName: input.guestName,
           guestToken,

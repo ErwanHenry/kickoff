@@ -30,10 +30,11 @@ export async function createMatch(input: MatchCreateInput) {
   // Generate share token
   const shareToken = generateShareToken();
 
-  // Insert match
+  // Insert match (id generated explicitly: column has no DB default)
   const [match] = await db
     .insert(matches)
     .values({
+      id: crypto.randomUUID(),
       title: validated.title,
       location: validated.location,
       date: validated.date,

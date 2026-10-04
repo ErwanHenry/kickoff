@@ -113,6 +113,7 @@ export async function insertRatings(
       .insert(ratings)
       .values(
         newRatings.map((rating) => ({
+          id: crypto.randomUUID(), // column has no DB default
           matchId,
           raterId,
           ratedId: rating.ratedId,
@@ -213,6 +214,7 @@ export async function updatePlayerStats(
       );
   } else {
     await db.insert(playerStats).values({
+      id: crypto.randomUUID(), // column has no DB default
       userId: ratedId,
       groupId,
       avgTechnique: newAvgTechnique.toFixed(2),
@@ -343,6 +345,7 @@ export async function createOrUpdatePlayerStats(
     const inserted = await db
       .insert(playerStats)
       .values({
+        id: crypto.randomUUID(), // column has no DB default
         userId,
         groupId,
         avgTechnique: avgTechnique.toFixed(2),

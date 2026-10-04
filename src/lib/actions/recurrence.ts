@@ -44,6 +44,7 @@ export async function createRecurringMatchOccurrence(parentMatchId: string) {
   const [childMatch] = await db
     .insert(matches)
     .values({
+      id: crypto.randomUUID(), // column has no DB default
       // Inherited from parent (per D-04)
       title: parentMatch.title,
       location: parentMatch.location,

@@ -211,6 +211,7 @@ export async function recalculatePlayerStats(
   await db
     .insert(playerStats)
     .values({
+      id: crypto.randomUUID(), // column has no DB default
       userId,
       groupId: groupId || null,
       matchesPlayed: stats.matchesPlayed,
